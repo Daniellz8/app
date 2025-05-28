@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gamificação [Sua Empresa] Desenvolvimento</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Gamificação DEV">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+</head>
+
+<body>
+    <header class="fixed-dashboard">
+        <h1>Gamificação [Sua Empresa] Desenvolvimento</h1>
+        <section class="dashboard">
+            <div class="metric">
+                <h3>XP Total:</h3>
+                <p id="xpTotal">0 XP</p>
+            </div>
+            <div class="metric">
+                <h3>Seguidores:</h3>
+                <p id="totalFollowers">0</p>
+            </div>
+            <div class="metric">
+                <h3>Avaliação:</h3>
+                <div id="starRating">
+                    <span class="star">☆</span><span class="star">☆</span><span class="star">☆</span><span
+                        class="star">☆</span><span class="star">☆</span>
+                    <span class="star">☆</span><span class="star">☆</span><span class="star">☆</span><span
+                        class="star">☆</span><span class="star">☆</span>
+                </div>
+            </div>
+            <div class="metric">
+                <h3>Receita Simulada:</h3>
+                <p id="simulatedRevenue">R$ 0,00</p>
+            </div>
+            <div class="metric">
+                <h3>Disponível para Equipamento:</h3>
+                <p id="realReward">R$ 0,00</p>
+            </div>
+            <div class="metric">
+                <h3>Custo Mensal (Simulado):</h3>
+                <p id="monthlyCost">R$ 600,00</p>
+            </div>
+            <div class="metric">
+                <h3>Debugs Concluídos:</h3>
+                <p id="exercisesCompletedCount">0</p>
+            </div>
+        </section>
+    </header>
+
+    <main class="content-below-dashboard">
+        <section class="timer-section">
+            <h2>Cronômetro de Produtividade</h2>
+            <div class="timer-display" id="timerDisplay">00:00:00</div>
+            <div class="timer-controls">
+                <button id="startTimer">Iniciar</button>
+                <button id="pauseTimer">Pausar</button>
+                <button id="resetTimer">Zerar</button>
+            </div>
+        </section>
+
+        <section class="actions">
+            <h2>Registrar Atividades</h2>
+            <button id="addLesson">Concluir Aula Teórica</button>
+
+            <div class="exercise-buttons-group">
+                <button id="addSmallDebug">Concluir Debug Pequeno</button>
+                <button id="addLargeDebug">Concluir Debug Grande</button>
+            </div>
+
+            <div class="project-management">
+                <h3>Gerenciar Projetos</h3>
+                <input type="text" id="newProjectName" placeholder="Nome do Novo Projeto">
+                <button id="createNewProject">Criar Novo Projeto</button>
+
+                <div id="activeProjectsContainer">
+                    <p class="no-projects-message">Nenhum projeto ativo.</p>
+                </div>
+                <button id="viewCompletedProjects">Ver Projetos Concluídos</button>
+            </div>
+
+            <button id="openDailyJournal" class="journal-button">Abrir Diário</button>
+            <button id="resetData" class="reset-button">Reiniciar Dados (Cuidado!)</button>
+        </section>
+
+        <section class="recent-activities">
+            <h2>Atividades Recentes</h2>
+            <ul id="activityList">
+            </ul>
+        </section>
+
+        <section class="activity-history">
+            <h2>História Completa de Atividades</h2>
+            <div id="activityHistoryList">
+                <p class="no-activities-message">Nenhuma atividade registrada ainda.</p>
+            </div>
+        </section>
+
+        <section class="weekly-exercises-chart">
+            <h2>Exercícios por Semana</h2>
+            <canvas id="exercisesChart"></canvas>
+        </section>
+    </main>
+
+    <div id="journalModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Diário de Desafios e Conquistas</h2>
+            <textarea id="journalEntry"
+                placeholder="Escreva aqui seus desafios, conquistas e pensamentos de hoje..."></textarea>
+            <button id="saveJournalEntry">Salvar Entrada</button>
+            <div id="journalHistory">
+                <h3>Entradas Anteriores:</h3>
+                <ul id="journalEntriesList"></ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="completedProjectsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Projetos Concluídos</h2>
+            <ul id="completedProjectsList"></ul>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+
+</html>

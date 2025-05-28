@@ -1,0 +1,884 @@
+:root {
+    /* Cores */
+    --primary-color: #28a745;
+    /* Verde para sucesso/principal */
+    --secondary-color: #f8f9fa;
+    /* Cinza claro para fundos de item */
+    --accent-color: #007bff;
+    /* Azul para ações/links */
+    --warning-color: #ffc107;
+    /* Amarelo para avisos */
+    --danger-color: #dc3545;
+    /* Vermelho para reset/perigo */
+    --info-color: #17a2b8;
+    /* Azul claro para informações */
+    --purple-color: #6f42c1;
+    /* Roxo para diário */
+
+    /* Cores de texto */
+    --text-color-dark: #2c3e50;
+    /* Títulos e texto principal */
+    --text-color-medium: #495057;
+    /* Texto secundário */
+    --text-color-light: #6c757d;
+    /* Texto terciário, info */
+    --text-color-white: #ffffff;
+    /* Texto sobre fundos escuros */
+
+    /* Sombras e Bordas */
+    --box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    --border-radius: 8px;
+    --border-light: 1px solid #e9ecef;
+    --border-medium: 1px solid #ccc;
+    --border-dark: 2px solid #eee;
+
+    /* Espaçamento */
+    --spacing-xs: 5px;
+    --spacing-sm: 10px;
+    --spacing-md: 15px;
+    --spacing-lg: 20px;
+    --spacing-xl: 25px;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f7f6;
+    /* Usando cor diretamente para o body */
+    color: var(--text-color-medium);
+    line-height: 1.6;
+}
+
+/* Estilos gerais para seções principais */
+h1,
+h2,
+h3 {
+    color: var(--text-color-dark);
+    margin-top: 0;
+}
+
+h1 {
+    font-size: 2em;
+}
+
+h2 {
+    font-size: 1.6em;
+    border-bottom: var(--border-dark);
+    padding-bottom: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+    /* Centraliza títulos de seção */
+}
+
+h3 {
+    font-size: 1.2em;
+    margin-bottom: var(--spacing-xs);
+    color: var(--text-color-light);
+}
+
+main {
+    display: grid;
+    gap: var(--spacing-xl);
+    max-width: 900px;
+    margin: 0 auto;
+    padding: var(--spacing-lg);
+    box-sizing: border-box;
+}
+
+/* Estilo para todas as seções, incluindo a nova history-activity */
+section {
+    background-color: var(--text-color-white);
+    padding: var(--spacing-xl);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+/* Botões gerais */
+button {
+    background-color: var(--accent-color);
+    color: var(--text-color-white);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+    display: block;
+    /* Garante que os botões ocupem sua própria linha */
+    width: 100%;
+    /* Por padrão, ocupa a largura total para mobile */
+    margin-bottom: var(--spacing-sm);
+    /* Espaçamento entre botões */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Estilos para o Dashboard Fixo (Cabeçalho) */
+header.fixed-dashboard {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    background-color: var(--primary-color);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+header.fixed-dashboard h1 {
+    color: var(--text-color-white);
+    font-size: 1.8em;
+    margin-bottom: var(--spacing-sm);
+    margin-top: 0;
+}
+
+header.fixed-dashboard .dashboard {
+    background-color: transparent;
+    box-shadow: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: var(--spacing-sm);
+    width: 100%;
+    max-width: 900px;
+}
+
+header.fixed-dashboard .metric {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-left: 3px solid rgba(255, 255, 255, 0.6);
+    padding: 6px var(--spacing-sm);
+    border-radius: var(--border-radius);
+    /* Arredondar as métricas também */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 45px;
+}
+
+header.fixed-dashboard .metric h3 {
+    color: var(--text-color-white);
+    font-size: 0.8em;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+header.fixed-dashboard .metric p {
+    color: var(--text-color-white);
+    font-size: 1em;
+    margin: 0;
+    font-weight: bold;
+}
+
+header.fixed-dashboard #starRating {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+header.fixed-dashboard #starRating .star {
+    font-size: 1.2em;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+header.fixed-dashboard #starRating .star.filled {
+    color: var(--warning-color);
+}
+
+/* Espaçamento para o conteúdo abaixo da dashboard fixa. */
+main.content-below-dashboard {
+    margin-top: 0;
+    /* Resetado para 0, JS vai definir */
+    padding-top: var(--spacing-xl);
+    /* Adiciona um padding no topo da main para o conteúdo não colar */
+}
+
+/* Estilos para o Cronômetro */
+.timer-section {
+    text-align: center;
+}
+
+.timer-display {
+    font-size: 3.5em;
+    font-weight: bold;
+    color: var(--text-color-dark);
+    background-color: #f0f8ff;
+    padding: var(--spacing-lg);
+    border-radius: var(--border-radius);
+    margin-bottom: var(--spacing-lg);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.timer-controls button {
+    width: auto;
+    margin: var(--spacing-xs);
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: 0.9em;
+    display: inline-block;
+    /* Botões do timer em linha */
+}
+
+.timer-controls #startTimer {
+    background-color: var(--primary-color);
+}
+
+.timer-controls #startTimer:hover {
+    background-color: #218838;
+}
+
+.timer-controls #pauseTimer {
+    background-color: var(--warning-color);
+    color: var(--text-color-dark);
+}
+
+.timer-controls #pauseTimer:hover {
+    background-color: #e0a800;
+}
+
+.timer-controls #resetTimer {
+    background-color: var(--text-color-light);
+}
+
+.timer-controls #resetTimer:hover {
+    background-color: #5a6268;
+}
+
+/* Estilos para o grupo de botões de exercício */
+.exercise-buttons-group {
+    display: grid;
+    gap: var(--spacing-sm);
+    grid-template-columns: 1fr;
+    margin-top: var(--spacing-sm);
+    max-width: 300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.exercise-buttons-group button {
+    width: 100%;
+    background-color: var(--info-color);
+}
+
+.exercise-buttons-group button:hover {
+    background-color: #138496;
+}
+
+/* Estilos para o Gerenciamento de Projetos */
+.project-management {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background-color: #e9f5e9;
+    /* Fundo mais claro para projetos */
+    border-radius: var(--border-radius);
+    border: 1px solid #d4edda;
+}
+
+.project-management input[type="text"] {
+    width: calc(100% - 22px);
+    padding: var(--spacing-sm);
+    margin-bottom: var(--spacing-sm);
+    border: var(--border-medium);
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.project-management button {
+    margin-top: var(--spacing-xs);
+    background-color: var(--warning-color);
+    color: var(--text-color-dark);
+}
+
+.project-management button:hover {
+    background-color: #e0a800;
+}
+
+.project-management #createNewProject {
+    background-color: var(--primary-color);
+    color: var(--text-color-white);
+}
+
+.project-management #createNewProject:hover {
+    background-color: #218838;
+}
+
+.active-project-card {
+    background-color: var(--secondary-color);
+    border: 1px solid #dee2e6;
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    margin-top: var(--spacing-md);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.active-project-card h4 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-sm);
+    color: var(--accent-color);
+    font-size: 1.2em;
+}
+
+.active-project-card .project-status {
+    font-weight: bold;
+    color: var(--text-color-light);
+    margin-bottom: var(--spacing-sm);
+}
+
+.active-project-card .project-buttons button {
+    width: auto;
+    /* Deixamos a largura automática e ajustamos com flexbox */
+    margin-right: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+    padding: 8px 12px;
+    font-size: 0.9em;
+    display: inline-block;
+    /* Para alinhar os botões */
+}
+
+.active-project-card .project-buttons button:last-child {
+    margin-right: 0;
+}
+
+.active-project-card .project-buttons button.pause {
+    background-color: var(--warning-color);
+    color: var(--text-color-dark);
+}
+
+.active-project-card .project-buttons button.pause:hover {
+    background-color: #e0a800;
+}
+
+.active-project-card .project-buttons button.resume {
+    background-color: var(--primary-color);
+}
+
+.active-project-card .project-buttons button.resume:hover {
+    background-color: #218838;
+}
+
+.active-project-card .project-buttons button.complete {
+    background-color: var(--accent-color);
+}
+
+.active-project-card .project-buttons button.complete:hover {
+    background-color: #0056b3;
+}
+
+.active-project-card .project-buttons button.archive {
+    background-color: var(--text-color-light);
+}
+
+.active-project-card .project-buttons button.archive:hover {
+    background-color: #5a6268;
+}
+
+.no-projects-message {
+    text-align: center;
+    color: var(--text-color-light);
+    font-style: italic;
+    margin-top: var(--spacing-md);
+}
+
+/* Estilos para o botão do diário e reset */
+.journal-button {
+    background-color: var(--purple-color);
+    margin-top: var(--spacing-lg);
+}
+
+.journal-button:hover {
+    background-color: #5a36a7;
+}
+
+.reset-button {
+    background-color: var(--danger-color);
+    margin-top: var(--spacing-sm);
+}
+
+.reset-button:hover {
+    background-color: #c82333;
+}
+
+/* Estilos para a lista de atividades recentes */
+.recent-activities ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.recent-activities li {
+    background-color: var(--secondary-color);
+    border: var(--border-light);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95em;
+    color: var(--text-color-medium);
+}
+
+.recent-activities li span {
+    font-weight: bold;
+    color: var(--text-color-dark);
+}
+
+/* Estilos para a nova seção de História de Atividades */
+.activity-history {
+    margin-top: var(--spacing-lg);
+    /* Espaçamento da seção anterior */
+}
+
+.activity-history h2 {
+    color: var(--text-color-dark);
+    margin-bottom: var(--spacing-md);
+    font-size: 1.4em;
+    text-align: center;
+}
+
+#activityHistoryList {
+    max-height: 400px;
+    /* Limita a altura para scroll */
+    overflow-y: auto;
+    /* Adiciona scroll se o conteúdo for maior */
+    padding-right: var(--spacing-sm);
+    /* Espaçamento para a barra de scroll */
+    scrollbar-width: thin;
+    /* Para navegadores baseados em Firefox */
+    scrollbar-color: var(--accent-color) #f1f1f1;
+    /* Cor da barra de scroll (thumb e track) */
+}
+
+/* Estilo para Webkit browsers (Chrome, Safari) */
+#activityHistoryList::-webkit-scrollbar {
+    width: 8px;
+    /* Largura da barra de scroll */
+}
+
+#activityHistoryList::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    /* Cor de fundo da trilha da barra de scroll */
+    border-radius: 10px;
+}
+
+#activityHistoryList::-webkit-scrollbar-thumb {
+    background: var(--accent-color);
+    /* Cor do "polegar" da barra de scroll */
+    border-radius: 10px;
+}
+
+#activityHistoryList::-webkit-scrollbar-thumb:hover {
+    background: #0056b3;
+    /* Cor do "polegar" ao passar o mouse */
+}
+
+
+#activityHistoryList .activity-item {
+    background-color: var(--secondary-color);
+    /* Fundo um pouco diferente para cada item */
+    color: var(--text-color-medium);
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95em;
+    flex-wrap: wrap;
+    /* Permite quebrar em telas menores */
+    border-left: 5px solid var(--primary-color);
+    /* Borda colorida para destaque */
+}
+
+#activityHistoryList .activity-item span {
+    margin-right: var(--spacing-sm);
+    flex-grow: 1;
+    /* Permite que o texto da atividade ocupe espaço */
+    color: var(--text-color-dark);
+    /* Texto mais escuro */
+}
+
+#activityHistoryList .activity-item .activity-date {
+    font-size: 0.8em;
+    color: var(--text-color-light);
+    flex-basis: 100%;
+    /* Data em nova linha em telas menores */
+    margin-top: var(--spacing-xs);
+    text-align: right;
+}
+
+/* Estilos para o Modal (Diário e Projetos Concluídos) */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1001;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    justify-content: center;
+    align-items: center;
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--text-color-white);
+    margin: 15% auto;
+    padding: 30px;
+    border: 1px solid #888;
+    border-radius: var(--border-radius);
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+.modal-content h2 {
+    color: var(--text-color-dark);
+    margin-top: 0;
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+.modal-content textarea {
+    width: calc(100% - 20px);
+    height: 150px;
+    padding: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+    border: var(--border-medium);
+    border-radius: 5px;
+    resize: vertical;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 1em;
+}
+
+.modal-content button {
+    width: auto;
+    padding: var(--spacing-sm) var(--spacing-lg);
+    margin-top: var(--spacing-sm);
+    display: block;
+    /* Garante que o botão Salvar Entrada fique em sua própria linha */
+    margin-left: auto;
+    /* Centraliza o botão */
+    margin-right: auto;
+    /* Centraliza o botão */
+}
+
+.close-button {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    top: var(--spacing-sm);
+    right: var(--spacing-lg);
+    cursor: pointer;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#journalHistory h3 {
+    margin-top: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 5px;
+    color: var(--text-color-light);
+}
+
+#journalEntriesList {
+    list-style: none;
+    padding: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    border: var(--border-light);
+    border-radius: 5px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--purple-color) #f1f1f1;
+}
+
+#journalEntriesList::-webkit-scrollbar {
+    width: 8px;
+}
+
+#journalEntriesList::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#journalEntriesList::-webkit-scrollbar-thumb {
+    background: var(--purple-color);
+    border-radius: 10px;
+}
+
+#journalEntriesList::-webkit-scrollbar-thumb:hover {
+    background: #5a36a7;
+}
+
+#journalEntriesList li {
+    background-color: var(--secondary-color);
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
+    border-radius: 4px;
+    border-left: 3px solid var(--purple-color);
+}
+
+#journalEntriesList li:last-child {
+    margin-bottom: 0;
+}
+
+#journalEntriesList li strong {
+    display: block;
+    font-size: 0.9em;
+    color: var(--text-color-light);
+    margin-bottom: var(--spacing-xs);
+}
+
+#completedProjectsList {
+    list-style: none;
+    padding: 0;
+    max-height: 300px;
+    overflow-y: auto;
+    border: var(--border-light);
+    border-radius: 5px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-color) #f1f1f1;
+}
+
+#completedProjectsList::-webkit-scrollbar {
+    width: 8px;
+}
+
+#completedProjectsList::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+#completedProjectsList::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+
+#completedProjectsList::-webkit-scrollbar-thumb:hover {
+    background: #218838;
+}
+
+#completedProjectsList li {
+    background-color: #eafbea;
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin-bottom: var(--spacing-xs);
+    border-radius: 4px;
+    border-left: 3px solid var(--primary-color);
+    font-weight: bold;
+}
+
+#completedProjectsList li span {
+    display: block;
+    font-weight: normal;
+    font-size: 0.9em;
+    color: var(--text-color-light);
+    margin-top: 3px;
+}
+
+/* Responsividade geral */
+
+/* Para telas maiores que 768px (Desktops e Laptops) */
+@media (min-width: 768px) {
+    main {
+        grid-template-columns: 1.5fr 1fr;
+        gap: 30px;
+    }
+
+    header.fixed-dashboard .dashboard {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-md);
+    }
+
+    /* Ajuste para os botões gerais em telas maiores */
+    .actions button,
+    .project-management button,
+    .modal-content button {
+        width: auto;
+        padding: 12px 20px;
+        margin-bottom: 0;
+        /* Remove margem inferior para alinhamento horizontal */
+        display: inline-block;
+        /* Permite que fiquem lado a lado */
+        margin-right: var(--spacing-sm);
+        /* Espaçamento entre botões inline */
+    }
+
+    .modal-content button {
+        /* Centraliza o botão salvar no modal */
+        margin-left: auto;
+        margin-right: auto;
+        display: block;
+    }
+
+    .timer-controls button {
+        width: auto;
+    }
+
+    /* Garante que o grupo de botões de exercício volte a 2 colunas */
+    .exercise-buttons-group {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: none;
+        margin-left: 0;
+        margin-right: 0;
+        gap: var(--spacing-md);
+    }
+
+    .exercise-buttons-group button {
+        width: 100%;
+    }
+
+    /* Projeto ativo: botões em linha */
+    .active-project-card .project-buttons {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: var(--spacing-sm);
+    }
+
+    .active-project-card .project-buttons button {
+        width: auto;
+        flex-shrink: 0;
+        margin-right: 0;
+        /* O gap já controla o espaçamento */
+        margin-bottom: 0;
+        /* Remove margem inferior */
+    }
+}
+
+
+/* Media query para tablets na orientação retrato e alguns smartphones maiores (767px e abaixo) */
+@media (max-width: 767px) {
+    main {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-lg);
+        padding: var(--spacing-md);
+    }
+
+    header.fixed-dashboard {
+        padding: var(--spacing-sm) var(--spacing-md);
+    }
+
+    header.fixed-dashboard h1 {
+        font-size: 1.6em;
+    }
+
+    header.fixed-dashboard .dashboard {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-sm);
+    }
+
+    header.fixed-dashboard .metric h3 {
+        font-size: 0.75em;
+    }
+
+    header.fixed-dashboard .metric p {
+        font-size: 0.9em;
+    }
+
+    /* Garante que os botões de ação e projeto preencham a largura */
+    .actions button,
+    .project-management button {
+        width: 100%;
+        margin-bottom: var(--spacing-sm);
+    }
+
+    /* Ajustes para o grupo de botões de exercício (se for o caso, 1 coluna) */
+    .exercise-buttons-group {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        gap: var(--spacing-sm);
+    }
+
+    /* Botões de projeto ativo: flex-wrap para quebra de linha */
+    .active-project-card .project-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-xs);
+        justify-content: center;
+    }
+
+    .active-project-card .project-buttons button {
+        width: calc(50% - 4px);
+        /* Dois botões por linha */
+        flex-grow: 1;
+        margin-bottom: 0;
+        /* O gap já controla o espaçamento */
+        margin-right: 0;
+    }
+
+    .modal-content {
+        padding: var(--spacing-lg);
+        width: 95%;
+        margin: 10% auto;
+    }
+
+    /* Ajuste para a nova história de atividades em telas menores */
+    #activityHistoryList {
+        max-height: 300px;
+        /* Altura menor em dispositivos móveis */
+    }
+
+    .activity-history h2 {
+        font-size: 1.2em;
+    }
+
+    #activityHistoryList .activity-item {
+        font-size: 0.9em;
+        padding: 10px;
+    }
+}
+
+/* Media query para smartphones muito pequenos (abaixo de 480px) */
+@media (max-width: 480px) {
+    header.fixed-dashboard .dashboard {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-xs);
+    }
+
+    header.fixed-dashboard .metric {
+        padding: 5px 8px;
+    }
+
+    header.fixed-dashboard .metric h3,
+    header.fixed-dashboard .metric p {
+        font-size: 0.8em;
+    }
+
+    .timer-display {
+        font-size: 2.5em;
+        padding: var(--spacing-md);
+    }
+
+    .timer-controls button {
+        padding: 8px 12px;
+        font-size: 0.8em;
+    }
+
+    .active-project-card .project-buttons button {
+        width: 100%;
+        /* Um botão por linha em telas muito pequenas */
+    }
+}
