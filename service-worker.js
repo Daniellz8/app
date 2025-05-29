@@ -1,4 +1,4 @@
-const CACHE_NAME = 'gamification-dev-cache-v1';
+const CACHE_NAME = 'gamification-dev-cache-v4'; // Mudei de v3 para v4
 const urlsToCache = [
     '/',
     '/index.html',
@@ -7,7 +7,8 @@ const urlsToCache = [
     '/manifest.json',
     '/icons/icon-192x192.png',
     '/icons/icon-512x512.png',
-    'https://cdn.jsdelivr.net/npm/chart.js' // Cache the Chart.js library
+    // Adicione outros assets se houver, como um som para o pomodoro
+    '/notification.mp3' // Exemplo: se você adicionar um som de notificação
 ];
 
 // Instalação do Service Worker: cacheia todos os assets necessários

@@ -4,120 +4,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamificação [Sua Empresa] Desenvolvimento</title>
+    <title>Gamificação DEV</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <meta name="apple-mobile-web-app-title" content="Gamificação DEV">
+    <!-- 'theme-color' meta tag is not fully supported in Firefox and Opera, but is harmless to include. -->
+    <!-- Removed theme-color meta tags due to lack of support in Firefox and Opera -->
     <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <header class="fixed-dashboard">
-        <h1>Gamificação [Sua Empresa] Desenvolvimento</h1>
-        <section class="dashboard">
-            <div class="metric">
-                <h3>XP Total:</h3>
-                <p id="xpTotal">0 XP</p>
+        <div class="dashboard-metrics">
+            <div class="metric-item">
+                <span class="metric-label">XP Total:</span>
+                <span id="xpTotal" class="metric-value">0 XP</span>
             </div>
-            <div class="metric">
-                <h3>Seguidores:</h3>
-                <p id="totalFollowers">0</p>
+            <div class="metric-item">
+                <span class="metric-label">Seguidores:</span>
+                <span id="totalFollowers" class="metric-value">0</span>
             </div>
-            <div class="metric">
-                <h3>Avaliação:</h3>
-                <div id="starRating">
-                    <span class="star">☆</span><span class="star">☆</span><span class="star">☆</span><span
-                        class="star">☆</span><span class="star">☆</span>
-                    <span class="star">☆</span><span class="star">☆</span><span class="star">☆</span><span
-                        class="star">☆</span><span class="star">☆</span>
+            <div class="metric-item star-rating">
+                <span class="metric-label">Reputação:</span>
+                <div id="starRating" class="metric-value">
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
+                    <span class="star">☆</span>
                 </div>
             </div>
-            <div class="metric">
-                <h3>Receita Simulada:</h3>
-                <p id="simulatedRevenue">R$ 0,00</p>
+            <div class="metric-item">
+                <span class="metric-label">Receita Simulada (Mês):</span>
+                <span id="simulatedRevenue" class="metric-value">R$ 0,00</span>
             </div>
-            <div class="metric">
-                <h3>Disponível para Equipamento:</h3>
-                <p id="realReward">R$ 0,00</p>
+            <div class="metric-item">
+                <span class="metric-label">Recompensa Real (Mês):</span>
+                <span id="realReward" class="metric-value">R$ 0,00</span>
             </div>
-            <div class="metric">
-                <h3>Custo Mensal (Simulado):</h3>
-                <p id="monthlyCost">R$ 600,00</p>
+            <div class="metric-item">
+                <span class="metric-label">Custo Mensal (Mês):</span>
+                <span id="monthlyCost" class="metric-value">R$ 600,00</span>
             </div>
-            <div class="metric">
-                <h3>Debugs Concluídos:</h3>
-                <p id="exercisesCompletedCount">0</p>
+            <div class="metric-item">
+                <span class="metric-label">Debugs Concluídos:</span>
+                <span id="exercisesCompletedCount" class="metric-value">0</span>
             </div>
-        </section>
+        </div>
+        <div class="activity-log">
+            <h3>Atividade Recente</h3>
+            <ul id="activityList">
+                <li>Nenhuma atividade recente.</li>
+            </ul>
+        </div>
     </header>
 
     <main class="content-below-dashboard">
-        <section class="timer-section">
-            <h2>Cronômetro de Produtividade</h2>
-            <div class="timer-display" id="timerDisplay">00:00:00</div>
-            <div class="timer-controls">
-                <button id="startTimer">Iniciar</button>
-                <button id="pauseTimer">Pausar</button>
-                <button id="resetTimer">Zerar</button>
-            </div>
+        <section class="action-buttons-container">
+            <button id="addLesson" class="action-button primary-button">Concluir Aula de Teoria</button>
+            <button id="resolveDebug" class="action-button secondary-button">Resolver Debug</button>
         </section>
 
-        <section class="actions">
-            <h2>Registrar Atividades</h2>
-            <button id="addLesson">Concluir Aula Teórica</button>
-
-            <div class="exercise-buttons-group">
-                <button id="addSmallDebug">Concluir Debug Pequeno</button>
-                <button id="addLargeDebug">Concluir Debug Grande</button>
-            </div>
-
-            <div class="project-management">
-                <h3>Gerenciar Projetos</h3>
-                <input type="text" id="newProjectName" placeholder="Nome do Novo Projeto">
-                <button id="createNewProject">Criar Novo Projeto</button>
-
-                <div id="activeProjectsContainer">
-                    <p class="no-projects-message">Nenhum projeto ativo.</p>
+        <section class="timers-section metrics-card">
+            <div class="timer-study">
+                <h3>Cronômetro de Estudo</h3>
+                <div class="timer-display" id="timerDisplay">00:00:00</div>
+                <div class="timer-controls">
+                    <button id="startTimer" class="control-button">Iniciar</button>
+                    <button id="pauseTimer" class="control-button">Pausar</button>
+                    <button id="resetTimer" class="control-button">Zerar</button>
                 </div>
-                <button id="viewCompletedProjects">Ver Projetos Concluídos</button>
             </div>
 
-            <button id="openDailyJournal" class="journal-button">Abrir Diário</button>
-            <button id="resetData" class="reset-button">Reiniciar Dados (Cuidado!)</button>
+            <div class="timer-pomodoro">
+                <h3>Pomodoro</h3>
+                <div class="pomodoro-display" id="pomodoroDisplay">25:00</div>
+                <div class="pomodoro-controls">
+                    <button id="startPomodoro" class="control-button primary-button">Iniciar Foco</button>
+                    <button id="pausePomodoro" class="control-button">Pausar</button>
+                    <button id="resetPomodoro" class="control-button">Zerar</button>
+                </div>
+                <div class="pomodoro-config">
+                    <label for="focusTime">Foco (min):</label>
+                    <input type="number" id="focusTime" value="25" min="1">
+                    <label for="breakTime">Descanso (min):</label>
+                    <input type="number" id="breakTime" value="5" min="1">
+                </div>
+            </div>
         </section>
 
-        <section class="recent-activities">
-            <h2>Atividades Recentes</h2>
-            <ul id="activityList">
+        <section class="metrics-card">
+            <h3>Exercícios por Semana</h3>
+            <div class="table-container">
+                <table id="exercisesTable">
+                    <thead>
+                        <tr>
+                            <th>Semana</th>
+                            <th>Qtd. Exercícios</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="project-management metrics-card">
+            <h3>Gerenciamento de Projetos</h3>
+            <div class="create-project">
+                <input type="text" id="newProjectName" placeholder="Nome do novo projeto">
+                <button id="createNewProject" class="primary-button">Criar Projeto</button>
+            </div>
+            <h4>Projetos Ativos:</h4>
+            <div id="activeProjectsContainer" class="active-projects-list">
+                <p class="no-projects-message">Nenhum projeto ativo.</p>
+            </div>
+            <button id="viewCompletedProjects" class="secondary-button">Ver Projetos Concluídos</button>
+        </section>
+
+        <section class="daily-journal metrics-card">
+            <h3>Diário de Bordo</h3>
+            <button id="openDailyJournal" class="primary-button">Abrir Diário</button>
+            <p class="journal-tip">Registre suas reflexões, aprendizados e desafios diários.</p>
+        </section>
+
+        <section class="full-activity-history metrics-card">
+            <h3>Histórico Completo de Atividades</h3>
+            <ul id="activityHistoryList" class="activity-history-scroll-area">
             </ul>
         </section>
 
-        <section class="activity-history">
-            <h2>História Completa de Atividades</h2>
-            <div id="activityHistoryList">
-                <p class="no-activities-message">Nenhuma atividade registrada ainda.</p>
-            </div>
-        </section>
-
-        <section class="weekly-exercises-chart">
-            <h2>Exercícios por Semana</h2>
-            <canvas id="exercisesChart"></canvas>
+        <section class="reset-data-section">
+            <button id="resetData" class="danger-button">Reiniciar Todos os Dados</button>
         </section>
     </main>
 
     <div id="journalModal" class="modal">
         <div class="modal-content">
             <span class="close-button">&times;</span>
-            <h2>Diário de Desafios e Conquistas</h2>
-            <textarea id="journalEntry"
-                placeholder="Escreva aqui seus desafios, conquistas e pensamentos de hoje..."></textarea>
-            <button id="saveJournalEntry">Salvar Entrada</button>
-            <div id="journalHistory">
-                <h3>Entradas Anteriores:</h3>
-                <ul id="journalEntriesList"></ul>
-            </div>
+            <h2>Diário de Bordo</h2>
+            <label for="journalTitle">Título da Entrada:</label>
+            <input type="text" id="journalTitle" placeholder="Ex: Aprendizados do Dia 1">
+            <label for="journalEntry">Anotações:</label>
+            <textarea id="journalEntry" placeholder="Escreva sua entrada diária aqui..."></textarea>
+            <button id="saveJournalEntry" class="primary-button">Salvar Entrada</button>
+            <ul id="journalEntriesList" class="journal-entries-list">
+            </ul>
         </div>
     </div>
 
@@ -125,12 +162,24 @@
         <div class="modal-content">
             <span class="close-button">&times;</span>
             <h2>Projetos Concluídos</h2>
-            <ul id="completedProjectsList"></ul>
+            <ul id="completedProjectsList" class="completed-projects-list">
+            </ul>
+        </div>
+    </div>
+
+    <div id="lessonModal" class="modal">
+        <div class="modal-content">
+            <span class="close-button">&times;</span>
+            <h2>Detalhes da Aula Teórica</h2>
+            <label for="lessonTitle">Título da Aula:</label>
+            <input type="text" id="lessonTitle" placeholder="Ex: Introdução ao JavaScript">
+            <label for="lessonNotes">Anotações:</label>
+            <textarea id="lessonNotes" placeholder="Suas anotações sobre a aula..."></textarea>
+            <button id="saveLessonDetails" class="primary-button">Salvar e Concluir Aula</button>
         </div>
     </div>
 
     <script src="script.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 
 </html>
