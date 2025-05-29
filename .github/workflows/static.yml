@@ -36,11 +36,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          # ... (código acima) ...
+          # Alterado para o caminho da sua pasta de conteúdo estático
+          path: './GamificacaoPessoal' # <--- ESTA É A LINHA CRÍTICA!
 
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: './GamificacaoPessoal' 
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
