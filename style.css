@@ -1066,3 +1066,166 @@ section h3 {
     color: #555;
     font-size: 0.85em;
 }
+
+/* --- Media Queries para Telas Menores (Celulares) --- */
+
+/* Aplica a telas com largura de até 768px (breakpoint comum para tablets/celulares) */
+@media (max-width: 768px) {
+
+    /* Ajustes para o cabeçalho/dashboard principal */
+    header.fixed-dashboard {
+        height: 60px;
+        /* Altura menor para o cabeçalho */
+        padding: 10px 15px;
+        /* Ajusta o preenchimento interno */
+        flex-direction: column;
+        /* Empilha os itens verticalmente (se necessário) */
+        align-items: center;
+        /* Centraliza os itens quando empilhados */
+        justify-content: center;
+        /* Centraliza o conteúdo */
+    }
+
+    .dashboard-metrics,
+    .dashboard-controls {
+        flex-direction: column;
+        /* Empilha as métricas/controles verticalmente */
+        align-items: center;
+        /* Centraliza os itens */
+        width: 100%;
+        /* Ocupa a largura total */
+        gap: 5px;
+        /* Reduz o espaçamento entre os itens */
+    }
+
+    .dashboard-metrics div,
+    .dashboard-controls div {
+        margin-bottom: 5px;
+        /* Adiciona um espaço entre elementos empilhados */
+    }
+
+    /* Ajusta o tamanho das fontes para melhor leitura em telas pequenas */
+    .dashboard-metrics span,
+    .dashboard-controls button,
+    .dashboard-controls input {
+        font-size: 0.8em;
+        /* Fonte menor */
+        padding: 5px 10px;
+        /* Ajusta o preenchimento dos botões */
+    }
+
+    h1 {
+        font-size: 1.5em;
+        /* Título principal menor */
+        margin-bottom: 10px;
+    }
+
+    h2 {
+        font-size: 1.2em;
+        /* Títulos de seção menores */
+        margin-top: 15px;
+    }
+
+    /* Ajusta a margem do conteúdo principal para considerar o cabeçalho menor */
+    main.content-below-dashboard {
+        margin-top: 85px;
+        /* (60px de altura do cabeçalho + 25px de margem inicial) */
+        padding: 15px;
+        /* Ajusta o preenchimento geral */
+    }
+
+    .card-container,
+    .activity-section,
+    .timer-section,
+    .project-management,
+    .journal-section,
+    .exercises-section {
+        flex-direction: column;
+        /* Empilha cartões e seções verticalmente */
+        gap: 15px;
+        /* Ajusta o espaçamento entre as seções empilhadas */
+    }
+
+    .card,
+    .timer-controls,
+    .pomodoro-controls,
+    .project-input-section {
+        width: 100%;
+        /* Faz com que cartões/seções ocupem a largura total */
+        margin-bottom: 10px;
+        /* Adiciona espaço entre eles */
+    }
+
+    /* Ajustes específicos para os cartões de projeto */
+    .active-project-card {
+        padding: 10px;
+    }
+
+    .active-project-card h4 {
+        font-size: 1.1em;
+    }
+
+    .active-project-card .project-buttons button {
+        padding: 5px 8px;
+        font-size: 0.75em;
+    }
+
+    /* Ajustes da tabela para telas menores */
+    table {
+        font-size: 0.85em;
+    }
+
+    th,
+    td {
+        padding: 8px;
+    }
+}
+
+/* --- Opcional: Ajustes específicos para telas MUITO pequenas (ex: iPhone SE) ou modo retrato muito estreito --- */
+@media (max-width: 480px) {
+    header.fixed-dashboard {
+        padding: 5px 10px;
+        height: 50px;
+        /* Cabeçalho ainda menor */
+    }
+
+    main.content-below-dashboard {
+        margin-top: 75px;
+        /* Ajusta a margem para cabeçalho ainda menor */
+        padding: 10px;
+    }
+
+    .dashboard-metrics span,
+    .dashboard-controls button,
+    .dashboard-controls input {
+        font-size: 0.75em;
+        padding: 4px 8px;
+    }
+
+    h1 {
+        font-size: 1.3em;
+    }
+
+    h2 {
+        font-size: 1.1em;
+    }
+}
+
+/* --- Opcional: Ajustes especificamente para modo paisagem em celulares --- */
+@media (max-width: 820px) and (orientation: landscape) {
+
+    /* Se a tela for larga, mas ainda pequena (como um celular em paisagem) */
+    .dashboard-metrics,
+    .dashboard-controls {
+        flex-direction: row;
+        /* Tenta manter os itens em linha se houver espaço suficiente */
+        justify-content: space-around;
+        /* Distribui o espaço */
+        flex-wrap: wrap;
+        /* Permite que os itens quebrem para a próxima linha se necessário */
+    }
+
+    /* Você pode querer remover ou reduzir o empilhamento vertical para `.card-container` etc.
+       se quiser um layout mais lado a lado em paisagem, mas isso depende do conteúdo.
+       Para um dashboard de jogo simples, empilhar verticalmente ainda pode ser mais limpo. */
+}
