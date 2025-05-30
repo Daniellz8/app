@@ -1,26 +1,26 @@
-const CACHE_NAME = 'gamificacao-dev-cache-v3'; // Alterado para v3 para garantir que o cache antigo seja limpo
+const CACHE_NAME = 'gamificacao-dev-cache-v5'; // Alterado para v5 para garantir que o cache antigo seja limpo e force a atualização
 const urlsToCache = [
-    // Arquivos essenciais para o funcionamento offline
-    '/GamificacaoPessoal/', // Representa o root da aplicação no GitHub Pages
-    '/GamificacaoPessoal/index.html',
-    '/GamificacaoPessoal/style.css',
-    '/GamificacaoPessoal/script.js',
-    '/GamificacaoPessoal/manifest.json',
-    // Ícones (verifique se você tem esses arquivos na sua pasta 'icons')
-    '/GamificacaoPessoal/icons/apple-touch-icon.png',
-    '/GamificacaoPessoal/icons/favicon-32x32.png',
-    '/GamificacaoPessoal/icons/favicon-16x16.png',
-    '/GamificacaoPessoal/icons/favicon.ico',
-    '/GamificacaoPessoal/icons/icon-72x72.png',
-    '/GamificacaoPessoal/icons/icon-96x96.png',
-    '/GamificacaoPessoal/icons/icon-128x128.png',
-    '/GamificacaoPessoal/icons/icon-144x144.png',
-    '/GamificacaoPessoal/icons/icon-152x152.png',
-    '/GamificacaoPessoal/icons/icon-192x192.png',
-    '/GamificacaoPessoal/icons/icon-384x384.png',
-    '/GamificacaoPessoal/icons/icon-512x512.png',
-    // Adicione outras fontes, imagens, etc., se forem importantes para o offline
-    'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap' // Google Fonts
+    // CORRIGIDO: Caminhos prefixados com o nome real do repositório 'app'.
+    '/app/', // Representa o root da aplicação no GitHub Pages
+    '/app/index.html',
+    '/app/style.css',
+    '/app/script.js',
+    '/app/manifest.json',
+    // Ícones
+    '/app/icons/apple-touch-icon.png',
+    '/app/icons/favicon-32x32.png',
+    '/app/icons/favicon-16x16.png',
+    '/app/icons/favicon.ico',
+    '/app/icons/icon-72x72.png',
+    '/app/icons/icon-96x96.png',
+    '/app/icons/icon-128x128.png',
+    '/app/icons/icon-144x144.png',
+    '/app/icons/icon-152x152.png',
+    '/app/icons/icon-192x192.png',
+    '/app/icons/icon-384x384.png',
+    '/app/icons/icon-512x512.png',
+    // Para cachear Google Fonts (opcional, como você notou)
+    'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap'
 ];
 
 self.addEventListener('install', (event) => {
