@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gamificação DEV</title>
 
+    <base href="/app/">
+
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
 
@@ -20,11 +22,9 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                // Alteração aqui: registra o Service Worker com um caminho absoluto
-                // Isso é importante se o seu site estiver em uma subpasta do GitHub Pages, como /app/
-                // O caminho deve ser relativo à raiz do domínio do GitHub Pages, ou seja, /nome_do_repositorio/service-worker.js
-                // No seu caso, se o repositório for 'app', fica '/app/service-worker.js'
-                navigator.serviceWorker.register('/app/service-worker.js') // <-- Caminho ajustado
+                // Com <base href="/app/">, este caminho relativo "service-worker.js" agora funcionará
+                // corretamente, pois a base já aponta para /app/.
+                navigator.serviceWorker.register('service-worker.js')
                     .then(reg => console.log('Service Worker Registrado!', reg))
                     .catch(err => console.log('Erro ao registrar Service Worker:', err));
             });
