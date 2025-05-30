@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gamificação DEV</title>
 
-    <base href="/app/GamificacaoPessoal/"> 
+    <!-- REMOVIDA A TAG <base href> - Ela estava causando problemas de caminho no GitHub Pages para repositórios de projeto.
+         Agora, todos os caminhos relativos (como style.css, manifest.json, icons/, script.js)
+         serão resolvidos corretamente em relação ao diretório raiz do seu repositório 'app' no GitHub Pages. -->
 
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
@@ -16,17 +19,15 @@
     <link rel="shortcut icon" href="icons/favicon.ico">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="icons/ms-icon-144x144.png">
-    <!-- <meta name="theme-color" content="#007bff">
-    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#0056b3" media="(prefers-color-scheme: dark)"> -->
-    <!-- 'theme-color' meta tags are commented out due to lack of support in Firefox, Firefox for Android, and Opera. Consider using CSS color-scheme or fallback styles for cross-browser compatibility. -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                // O caminho aqui é relativo ao 'base href' acima, então 'service-worker.js' é suficiente
-                navigator.serviceWorker.register('service-worker.js') 
+            window.addEventListener('load', function () {
+                // O caminho aqui é relativo ao root do seu site no GitHub Pages (ex: /GamificacaoPessoal/service-worker.js)
+                // O escopo do Service Worker deve ser ajustado para o nome do repositório no service-worker.js
+                // O registro do Service Worker agora usará o caminho correto.
+                navigator.serviceWorker.register('service-worker.js')
                     .then(reg => console.log('Service Worker Registrado!', reg))
                     .catch(err => console.log('Erro ao registrar Service Worker:', err));
             });

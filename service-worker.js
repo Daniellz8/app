@@ -1,26 +1,26 @@
-const CACHE_NAME = 'gamificacao-dev-cache-v2'; // Alterado para v2 para garantir que o cache antigo seja limpo
+const CACHE_NAME = 'gamificacao-dev-cache-v3'; // Alterado para v3 para garantir que o cache antigo seja limpo
 const urlsToCache = [
     // Arquivos essenciais para o funcionamento offline
-    '/', // Representa o index.html na raiz do escopo do service worker
-    'index.html',
-    'style.css',
-    'script.js',
-    'manifest.json',
+    '/GamificacaoPessoal/', // Representa o root da aplicação no GitHub Pages
+    '/GamificacaoPessoal/index.html',
+    '/GamificacaoPessoal/style.css',
+    '/GamificacaoPessoal/script.js',
+    '/GamificacaoPessoal/manifest.json',
     // Ícones (verifique se você tem esses arquivos na sua pasta 'icons')
-    'icons/apple-touch-icon.png',
-    'icons/favicon-32x32.png',
-    'icons/favicon-16x16.png',
-    'icons/favicon.ico',
-    'icons/icon-72x72.png',
-    'icons/icon-96x96.png',
-    'icons/icon-128x128.png',
-    'icons/icon-144x144.png',
-    'icons/icon-152x152.png',
-    'icons/icon-192x192.png',
-    'icons/icon-384x384.png',
-    'icons/icon-512x512.png'
+    '/GamificacaoPessoal/icons/apple-touch-icon.png',
+    '/GamificacaoPessoal/icons/favicon-32x32.png',
+    '/GamificacaoPessoal/icons/favicon-16x16.png',
+    '/GamificacaoPessoal/icons/favicon.ico',
+    '/GamificacaoPessoal/icons/icon-72x72.png',
+    '/GamificacaoPessoal/icons/icon-96x96.png',
+    '/GamificacaoPessoal/icons/icon-128x128.png',
+    '/GamificacaoPessoal/icons/icon-144x144.png',
+    '/GamificacaoPessoal/icons/icon-152x152.png',
+    '/GamificacaoPessoal/icons/icon-192x192.png',
+    '/GamificacaoPessoal/icons/icon-384x384.png',
+    '/GamificacaoPessoal/icons/icon-512x512.png',
     // Adicione outras fontes, imagens, etc., se forem importantes para o offline
-    // Exemplo: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap', // Se você quiser cachear a fonte do Google Fonts
+    'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap' // Google Fonts
 ];
 
 self.addEventListener('install', (event) => {

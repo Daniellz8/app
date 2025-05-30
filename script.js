@@ -371,7 +371,7 @@ function updateActivityHistoryList() {
         if (activity.type === 'Aula' && activity.lessonTitle) {
             activityDetail = `Aula: "${activity.lessonTitle}"` + (activity.lessonNotes ? ` - Anotações: "${activity.lessonNotes.substring(0, 50)}..."` : '');
         } else if (activity.type === 'Diário' && activity.journalTitle) {
-            activityDetail = `Diário: "${journalTitle}"`; // Corrigido para journalTitle
+            activityDetail = `Diário: "${activity.journalTitle}"`; // Corrigido para activity.journalTitle
         } else if (activity.type === 'Sistema' && activity.systemMessage) {
             activityDetail = activity.detail;
         }
@@ -402,9 +402,11 @@ function loadGameState() {
                 gameState.activityHistory = [];
             } else {
                 gameState.activityHistory.forEach(activity => {
+                    // Garante que dateObj seja um objeto Date, se for uma string ISO
                     if (typeof activity.dateObj === 'string' && !isNaN(new Date(activity.dateObj))) {
                         activity.dateObj = new Date(activity.dateObj);
                     } else if (!(activity.dateObj instanceof Date)) {
+                        // Se não for string válida nem Date, inicializa com data atual
                         activity.dateObj = new Date();
                     }
                 });
@@ -419,12 +421,14 @@ function loadGameState() {
                     breakDuration: 5 * 60
                 };
             } else {
+                // Garante que as durações estejam definidas
                 gameState.pomodoro.focusDuration = gameState.pomodoro.focusDuration || 25 * 60;
                 gameState.pomodoro.breakDuration = gameState.pomodoro.breakDuration || 5 * 60;
+                // Se remainingSeconds não estiver definido ou for 0, inicializa
                 if (gameState.pomodoro.remainingSeconds === 0 || typeof gameState.pomodoro.remainingSeconds === 'undefined') {
                     gameState.pomodoro.remainingSeconds = gameState.pomodoro.isFocusMode ? gameState.pomodoro.focusDuration : gameState.pomodoro.breakDuration;
                 }
-                gameState.pomodoro.isRunning = false;
+                gameState.pomodoro.isRunning = false; // Garante que não comece rodando ao recarregar
             }
 
             if (typeof gameState.exercisesPerWeek !== 'object' || gameState.exercisesPerWeek === null) {
@@ -454,6 +458,8 @@ function loadGameState() {
 
         } catch (e) {
             console.error("Erro ao carregar gameState do localStorage:", e);
+            // Opcional: Limpar o localStorage se o estado estiver corrompido para evitar loop de erro
+            // localStorage.removeItem('gamificationGameState');
         }
     }
 }
@@ -767,8 +773,9 @@ startPomodoroButton.addEventListener('click', () => {
     }
     startPomodoro();
 });
-pausePomodoroButton.addEventListener('click', pausePomodoro);
+pausePomodoroButton.addEventListener('click', pausePomodoro); // Adicionado o listener completo
 resetPomodoroButton.addEventListener('click', resetPomodoro);
+
 focusTimeInput.addEventListener('change', loadPomodoroSettings);
 breakTimeInput.addEventListener('change', loadPomodoroSettings);
 
@@ -782,62 +789,75 @@ openDailyJournalButton.addEventListener('click', () => {
     renderJournalEntries();
     journalModal.classList.add('active');
 });
+
 saveJournalEntryButton.addEventListener('click', saveJournalEntry);
 
-
 resetDataButton.addEventListener('click', () => {
-    // Substituído confirm() por console.log ou modal customizado
-    console.log('Tem certeza que deseja REINICIAR TODOS OS DADOS do aplicativo? Esta ação é irreversível!');
+    // Substituído confirm() por console.log. Idealmente, use um modal de confirmação customizado.
+    console.log('Tem certeza que deseja reiniciar todos os dados? Esta ação é irreversível.');
     // Se você quiser um modal de confirmação, precisará implementá-lo no HTML/CSS/JS
-    // Por agora, apenas reinicia diretamente para evitar bloqueio da UI
-    localStorage.removeItem('gamificationGameState');
-    location.reload(); // Recarrega a página para iniciar com um estado limpo
+    // Por agora, apenas reseta os dados diretamente para evitar bloqueio da UI
+    if (confirm('Tem certeza que deseja reiniciar todos os dados? Esta ação é irreversível.')) { // Mantendo confirm para teste, mas idealmente substituir
+        localStorage.removeItem('gamificationGameState');
+        gameState = { // Resetar para o estado inicial padrão
+            totalXP: 0,
+            lessonsCompleted: 0,
+            dailyDebugsCompleted: 0,
+            lastDebugDate: null,
+            exercisesCompleted: 0,
+            projectsCompleted: 0,
+            simulatedRevenue: 0,
+            totalFollowers: 0,
+            recentActivities: [],
+            activityHistory: [],
+            timerSeconds: 0,
+            pomodoro: {
+                isRunning: false,
+                isFocusMode: true,
+                remainingSeconds: 0,
+                focusDuration: 25 * 60,
+                breakDuration: 5 * 60
+            },
+            exercisesPerWeek: {},
+            activeProjects: [],
+            completedProjects: [],
+            journalEntries: [],
+            lessonEntries: [],
+            dailyDebugRewardsPaid: { hasPaid30: false, hasPaid50: false }
+        };
+        saveGameState();
+        updateUI();
+        addActivityToList('Sistema', 'Todos os dados foram reiniciados.', { systemMessage: true });
+    }
 });
 
-
-// Lógica para fechar modais genéricos
+// Fechar modais
 closeButtons.forEach(button => {
     button.addEventListener('click', (event) => {
         event.target.closest('.modal').classList.remove('active');
     });
 });
 
-// Fechar modal ao clicar fora (opcional, mas bom para UX)
+// Fechar modal ao clicar fora do conteúdo
 window.addEventListener('click', (event) => {
-    if (event.target === journalModal) {
-        journalModal.classList.remove('active');
-    }
-    if (event.target === completedProjectsModal) {
-        completedProjectsModal.classList.remove('active');
-    }
-    if (event.target === lessonModal) {
-        lessonModal.classList.remove('active');
+    if (event.target.classList.contains('modal')) {
+        event.target.classList.remove('active');
     }
 });
 
-
-// ===============================================
-// 9. Inicialização do Aplicativo
-// ===============================================
-
-document.addEventListener('DOMContentLoaded', () => {
-    adjustMainContentMargin();
-    window.addEventListener('resize', adjustMainContentMargin); // Ajusta a margem em caso de redimensionamento da janela
-
-    loadGameState();
-    checkAndResetDailyDebugs();
-    updateUI();
-    updateTimerDisplay();
-    updatePomodoroDisplay();
-
-    // Se o cronômetro estava rodando, reinicia o intervalo
-    if (timerInterval) {
-        clearInterval(timerInterval);
-        startTimer();
-    }
-    // Se o pomodoro estava rodando, reinicia o intervalo
-    if (gameState.pomodoro.isRunning) {
-        gameState.pomodoro.isRunning = false;
-        startPomodoro();
-    }
+// Ajustar margem do conteúdo principal ao carregar e redimensionar
+window.addEventListener('load', () => {
+    loadGameState(); // Carrega o estado do jogo
+    checkAndResetDailyDebugs(); // Verifica e reseta debugs diários na carga
+    updateUI(); // Atualiza a UI com o estado carregado
+    adjustMainContentMargin(); // Ajusta a margem do conteúdo principal
 });
+
+window.addEventListener('resize', adjustMainContentMargin);
+
+// Inicialização do Pomodoro na carga
+// Se o pomodoro estava rodando, ele não reiniciará automaticamente,
+// mas o tempo restante e o modo serão carregados.
+// O usuário terá que clicar em "Iniciar Foco" ou "Iniciar Descanso" novamente.
+updatePomodoroDisplay();
+
