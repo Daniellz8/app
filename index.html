@@ -8,7 +8,33 @@
 
     <meta name="description"
         content="Acompanhe seu progresso de desenvolvimento, XP, projetos e mais com Gamificação DEV.">
-    <meta name="theme-color" content="#2c3e50">
+    <!-- Theme color for Chrome, Edge, Android -->
+    <!-- Theme color for Chrome, Edge, Android (not supported by Firefox/Opera) -->
+    <!-- Theme color meta tags removed for Firefox/Opera compatibility; fallback handled via CSS below -->
+    <!-- Fallback background color for Firefox and Opera via CSS -->
+    <style>
+      @media (prefers-color-scheme: dark) {
+        body { background-color: #2c3e50; }
+      }
+      @media (prefers-color-scheme: light) {
+        body { background-color: #ffffff; }
+      }
+    </style>
+    <!-- Fallback for Windows Phone -->
+    <meta name="msapplication-navbutton-color" content="#2c3e50">
+    <!-- Fallback for iOS Safari -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- Firefox and Opera do not support theme-color meta, so provide a default background color in CSS as fallback -->
+    <style>
+      @media (prefers-color-scheme: dark) {
+        body { background-color: #2c3e50; }
+      }
+      @media (prefers-color-scheme: light) {
+        body { background-color: #ffffff; }
+      }
+    </style>
+    <meta name="msapplication-navbutton-color" content="#2c3e50">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <base href="/app/">
 
     <link rel="stylesheet" href="style.css">
