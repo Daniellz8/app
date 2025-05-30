@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gamificação DEV</title>
+    <title>Gamificação DEV - Seu Dashboard de Progresso</title>
 
+    <meta name="description"
+        content="Acompanhe seu progresso de desenvolvimento, XP, projetos e mais com Gamificação DEV.">
+    <meta name="theme-color" content="#2c3e50">
     <base href="/app/">
 
     <link rel="stylesheet" href="style.css">
@@ -15,8 +18,10 @@
     <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
     <link rel="shortcut icon" href="icons/favicon.ico">
+    <link rel="mask-icon" href="icons/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="msapplication-TileImage" content="icons/ms-icon-144x144.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
     <script>
@@ -33,70 +38,73 @@
 </head>
 
 <body>
-    <header class="fixed-dashboard">
+    <header class="fixed-dashboard" aria-label="Dashboard de Métricas e Atividades">
         <div class="dashboard-metrics">
             <div class="metric-item">
                 <span class="metric-label">XP Total:</span>
-                <span id="xpTotal" class="metric-value">0 XP</span>
+                <span id="xpTotal" class="metric-value" role="status">0 XP</span>
             </div>
             <div class="metric-item">
                 <span class="metric-label">Seguidores:</span>
-                <span id="totalFollowers" class="metric-value">0</span>
+                <span id="totalFollowers" class="metric-value" role="status">0</span>
             </div>
             <div class="metric-item star-rating">
                 <span class="metric-label">Reputação:</span>
-                <div id="starRating" class="metric-value">
-                    <span class="star">☆</span>
-                    <span class="star">☆</span>
-                    <span class="star">☆</span>
-                    <span class="star">☆</span>
-                    <span class="star">☆</span>
-                    <span class="star">☆</span>
-                    <span class="star">☆</span>
-                    <span class="star">☆</span>
-                    <span class="star">☆</span>
-                    <span class="star">☆</span>
+                <div id="starRating" class="metric-value" aria-label="Avaliação de Reputação" role="img">
+                    <span class="star" aria-hidden="true">☆</span>
+                    <span class="star" aria-hidden="true">☆</span>
+                    <span class="star" aria-hidden="true">☆</span>
+                    <span class="star" aria-hidden="true">☆</span>
+                    <span class="star" aria-hidden="true">☆</span>
+                    <span class="star" aria-hidden="true">☆</span>
+                    <span class="star" aria-hidden="true">☆</span>
+                    <span class="star" aria-hidden="true">☆</span>
+                    <span class="star" aria-hidden="true">☆</span>
+                    <span class="star" aria-hidden="true">☆</span>
                 </div>
             </div>
             <div class="metric-item">
                 <span class="metric-label">Receita Simulada (Mês):</span>
-                <span id="simulatedRevenue" class="metric-value">R$ 0,00</span>
+                <span id="simulatedRevenue" class="metric-value" role="status">R$ 0,00</span>
             </div>
             <div class="metric-item">
                 <span class="metric-label">Recompensa Real (Mês):</span>
-                <span id="realReward" class="metric-value">R$ 0,00</span>
+                <span id="realReward" class="metric-value" role="status">R$ 0,00</span>
             </div>
             <div class="metric-item">
-                <span class="metric-label">Custo Mensal (Mês):</span>
-                <span id="monthlyCost" class="metric-value">R$ 600,00</span>
+                <span class="metric-label">Custo Mensal:</span>
+                <span id="monthlyCost" class="metric-value" role="status">R$ 600,00</span>
             </div>
             <div class="metric-item">
                 <span class="metric-label">Debugs Concluídos:</span>
-                <span id="exercisesCompletedCount" class="metric-value">0</span>
+                <span id="exercisesCompletedCount" class="metric-value" role="status">0</span>
             </div>
         </div>
-        <div class="activity-log">
+
+        <div class="activity-log" aria-live="polite">
             <h3>Atividade Recente</h3>
             <ul id="activityList">
                 <li>Nenhuma atividade recente.</li>
             </ul>
         </div>
+
         <div class="activity-log motivational-phrase-log">
             <h3>Inspiração Diária</h3>
-            <p id="dailyMotivationalPhrase" class="motivational-phrase">Carregando frase...</p>
+            <p id="dailyMotivationalPhrase" class="motivational-phrase" role="status">Carregando frase...</p>
         </div>
     </header>
 
     <main class="content-below-dashboard">
-        <section class="action-buttons-container">
-            <button id="addLesson" class="action-button primary-button">Concluir Aula de Teoria</button>
+        <section class="action-buttons-container" aria-labelledby="action-buttons-title">
+            <h2 id="action-buttons-title" class="sr-only">Ações Principais</h2> <button id="addLesson"
+                class="action-button primary-button">Concluir Aula de Teoria</button>
             <button id="resolveDebug" class="action-button secondary-button">Resolver Debug</button>
         </section>
 
         <section class="timers-section metrics-card">
             <div class="timer-study">
                 <h3>Cronômetro de Estudo</h3>
-                <div class="timer-display" id="timerDisplay">00:00:00</div>
+                <div class="timer-display" id="timerDisplay" role="timer" aria-live="off">00:00:00</div>
                 <div class="timer-controls">
                     <button id="startTimer" class="control-button">Iniciar</button>
                     <button id="pauseTimer" class="control-button">Pausar</button>
@@ -106,7 +114,7 @@
 
             <div class="timer-pomodoro">
                 <h3>Pomodoro</h3>
-                <div class="pomodoro-display" id="pomodoroDisplay">25:00</div>
+                <div class="pomodoro-display" id="pomodoroDisplay" role="timer" aria-live="off">25:00</div>
                 <div class="pomodoro-controls">
                     <button id="startPomodoro" class="control-button primary-button">Iniciar Foco</button>
                     <button id="pausePomodoro" class="control-button">Pausar</button>
@@ -114,21 +122,23 @@
                 </div>
                 <div class="pomodoro-config">
                     <label for="focusTime">Foco (min):</label>
-                    <input type="number" id="focusTime" value="25" min="1">
+                    <input type="number" id="focusTime" value="25" min="1" aria-label="Tempo de foco em minutos">
                     <label for="breakTime">Descanso (min):</label>
-                    <input type="number" id="breakTime" value="5" min="1">
+                    <input type="number" id="breakTime" value="5" min="1" aria-label="Tempo de descanso em minutos">
                 </div>
             </div>
         </section>
 
         <section class="metrics-card">
             <h3>Exercícios por Semana</h3>
-            <div class="table-container">
+            <div class="table-container" tabindex="0" role="region" aria-labelledby="exercisesTableCaption">
                 <table id="exercisesTable">
+                    <caption id="exercisesTableCaption" class="sr-only">Quantidade de exercícios concluídos por semana
+                    </caption>
                     <thead>
                         <tr>
-                            <th>Semana</th>
-                            <th>Qtd. Exercícios</th>
+                            <th scope="col">Semana</th>
+                            <th scope="col">Qtd. Exercícios</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -139,12 +149,14 @@
 
         <section class="project-management metrics-card">
             <h3>Gerenciamento de Projetos</h3>
-            <div class="create-project">
-                <input type="text" id="newProjectName" placeholder="Nome do novo projeto">
+            <fieldset class="create-project">
+                <legend>Criar Novo Projeto</legend>
+                <input type="text" id="newProjectName" placeholder="Nome do novo projeto"
+                    aria-label="Nome do novo projeto">
                 <button id="createNewProject" class="primary-button">Criar Projeto</button>
-            </div>
+            </fieldset>
             <h4>Projetos Ativos:</h4>
-            <div id="activeProjectsContainer" class="active-projects-list">
+            <div id="activeProjectsContainer" class="active-projects-list" aria-live="polite">
                 <p class="no-projects-message">Nenhum projeto ativo.</p>
             </div>
             <button id="viewCompletedProjects" class="secondary-button">Ver Projetos Concluídos</button>
@@ -158,13 +170,13 @@
 
         <section class="full-activity-history metrics-card">
             <h3>Histórico Completo de Atividades</h3>
-            <ul id="activityHistoryList" class="activity-history-scroll-area">
+            <ul id="activityHistoryList" class="activity-history-scroll-area" aria-live="polite">
             </ul>
         </section>
 
         <section class="development-history metrics-card">
             <h3>Nossa Jornada de Desenvolvimento</h3>
-            <ul id="developmentHistoryList" class="history-list">
+            <ul id="developmentHistoryList" class="history-list" aria-live="polite">
             </ul>
             <p class="history-tip">Cada linha é um passo em direção ao nosso sucesso em equipe!</p>
         </section>
@@ -174,37 +186,43 @@
         </section>
     </main>
 
-    <div id="journalModal" class="modal">
+    <div id="journalModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="journalModalTitle"
+        aria-hidden="true">
         <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>Diário de Bordo</h2>
+            <button class="close-button" aria-label="Fechar Diário de Bordo">&times;</button>
+            <h2 id="journalModalTitle">Diário de Bordo</h2>
             <label for="journalTitle">Título da Entrada:</label>
-            <input type="text" id="journalTitle" placeholder="Ex: Aprendizados do Dia 1">
+            <input type="text" id="journalTitle" placeholder="Ex: Aprendizados do Dia 1"
+                aria-label="Título da entrada do diário">
             <label for="journalEntry">Anotações:</label>
-            <textarea id="journalEntry" placeholder="Escreva sua entrada diária aqui..."></textarea>
+            <textarea id="journalEntry" placeholder="Escreva sua entrada diária aqui..."
+                aria-label="Anotações do diário"></textarea>
             <button id="saveJournalEntry" class="primary-button">Salvar Entrada</button>
-            <ul id="journalEntriesList" class="journal-entries-list">
+            <ul id="journalEntriesList" class="journal-entries-list" aria-live="polite">
             </ul>
         </div>
     </div>
 
-    <div id="completedProjectsModal" class="modal">
+    <div id="completedProjectsModal" class="modal" role="dialog" aria-modal="true"
+        aria-labelledby="completedProjectsModalTitle" aria-hidden="true">
         <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>Projetos Concluídos</h2>
-            <ul id="completedProjectsList" class="completed-projects-list">
+            <button class="close-button" aria-label="Fechar Projetos Concluídos">&times;</button>
+            <h2 id="completedProjectsModalTitle">Projetos Concluídos</h2>
+            <ul id="completedProjectsList" class="completed-projects-list" aria-live="polite">
             </ul>
         </div>
     </div>
 
-    <div id="lessonModal" class="modal">
+    <div id="lessonModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="lessonModalTitle"
+        aria-hidden="true">
         <div class="modal-content">
-            <span class="close-button">&times;</span>
-            <h2>Detalhes da Aula Teórica</h2>
+            <button class="close-button" aria-label="Fechar Detalhes da Aula Teórica">&times;</button>
+            <h2 id="lessonModalTitle">Detalhes da Aula Teórica</h2>
             <label for="lessonTitle">Título da Aula:</label>
-            <input type="text" id="lessonTitle" placeholder="Ex: Introdução ao JavaScript">
+            <input type="text" id="lessonTitle" placeholder="Ex: Introdução ao JavaScript" aria-label="Título da aula">
             <label for="lessonNotes">Anotações:</label>
-            <textarea id="lessonNotes" placeholder="Suas anotações sobre a aula..."></textarea>
+            <textarea id="lessonNotes" placeholder="Suas anotações sobre a aula..."
+                aria-label="Anotações da aula"></textarea>
             <button id="saveLessonDetails" class="primary-button">Salvar e Concluir Aula</button>
         </div>
     </div>

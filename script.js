@@ -18,7 +18,7 @@ const MONTHLY_COST = 600;
 const REAL_REWARD_CONVERSION_FACTOR = 0.2; // 200/1000 = 0.2 -> 20% da receita líquida.
 const FOLLOWERS_FOR_10_STARS = 3086; // Meta para 10 estrelas
 
-// Frases motivacionais (Novidade!)
+// Frases motivacionais
 const MOTIVATIONAL_PHRASES = [
     "Acredite no seu potencial. Ele é ilimitado.",
     "Pequenos passos todos os dias levam a grandes conquistas.",
@@ -57,31 +57,30 @@ const MOTIVATIONAL_PHRASES = [
 let gameState = {
     totalXP: 0,
     lessonsCompleted: 0,
-    dailyDebugsCompleted: 0, // Debugs feitos no dia atual
-    lastDebugDate: null,      // Data do último debug registrado (para reset diário)
-    exercisesCompleted: 0, // Contador total de debugs de todos os tempos (não foi modificado, mantido como antes)
+    dailyDebugsCompleted: 0,       // Debugs feitos no dia atual
+    lastDebugDate: null,           // Data do último debug registrado (para reset diário)
+    dailyDebugRevenueAccumulated: 0, // NOVO: Receita acumulada APENAS dos debugs do dia atual
+    exercisesCompleted: 0,         // Contador total de debugs de todos os tempos
     projectsCompleted: 0,
-    simulatedRevenue: 0, // Receita total simulada (acumulativa)
+    simulatedRevenue: 0,           // Receita total simulada (acumulativa de debugs e projetos)
     totalFollowers: 0,
-    recentActivities: [], // Atividades da dashboard (limite para exibição)
-    activityHistory: [], // Histórico COMPLETO de todas as atividades
-    dailyActivitySummary: {}, // NOVO: Armazena um resumo das atividades por dia
-    lastDailySummaryDate: null, // NOVO: Data da última vez que o resumo diário foi gerado
-    timerSeconds: 0, // Tempo do cronômetro em segundos
+    recentActivities: [],          // Atividades da dashboard (limite para exibição)
+    activityHistory: [],           // Histórico COMPLETO de todas as atividades
+    dailyActivitySummary: {},      // NOVO: Armazena um resumo das atividades por dia
+    lastDailySummaryDate: null,    // NOVO: Data da última vez que o resumo diário foi gerado
+    timerSeconds: 0,               // Tempo do cronômetro em segundos
     pomodoro: {
         isRunning: false,
         isFocusMode: true,
         remainingSeconds: 0,
-        focusDuration: 25 * 60, // 25 minutos em segundos
-        breakDuration: 5 * 60 // 5 minutos em segundos
+        focusDuration: 25 * 60,    // 25 minutos em segundos
+        breakDuration: 5 * 60      // 5 minutos em segundos
     },
-    exercisesPerWeek: {}, // Armazena exercícios concluídos por semana (formato 'YYYY-WW')
-    activeProjects: [], // Lista de projetos em andamento/pausados
-    completedProjects: [], // Lista de projetos concluídos
-    journalEntries: [], // Entradas do diário
-    lessonEntries: [], // Entradas de aulas teóricas com título e anotações
-    // Removido: dailyDebugRewardsPaid e debugRewardMilestonesPaid,
-    // pois o cálculo é agora de "valor total"
+    exercisesPerWeek: {},          // Armazena exercícios concluídos por semana (formato 'YYYY-WW')
+    activeProjects: [],            // Lista de projetos em andamento/pausados
+    completedProjects: [],         // Lista de projetos concluídos
+    journalEntries: [],            // Entradas do diário
+    lessonEntries: [],             // Entradas de aulas teóricas com título e anotações
     currentMotivationalPhrase: "", // NOVO: Frase motivacional do dia
     lastMotivationalPhraseDate: null // NOVO: Data da última atualização da frase
 };
@@ -144,7 +143,6 @@ const saveJournalEntryButton = document.getElementById('saveJournalEntry');
 const journalEntriesList = document.getElementById('journalEntriesList');
 const completedProjectsList = document.getElementById('completedProjectsList');
 
-// NOVO: Elemento para a seção de frases motivacionais (já está no HTML, apenas obtenha a referência)
 const dailyMotivationalPhraseElement = document.getElementById('dailyMotivationalPhrase');
 
 // ===============================================
@@ -153,7 +151,9 @@ const dailyMotivationalPhraseElement = document.getElementById('dailyMotivationa
 
 function adjustMainContentMargin() {
     const headerHeight = headerElement.offsetHeight;
-    mainContentElement.style.marginTop = `${headerHeight + 25}px`;
+    // Define a variável CSS personalizada que será usada pelo 'main'
+    document.documentElement.style.setProperty('--dashboard-height', `${headerHeight}px`);
+    // O padding-top do main é definido no CSS usando essa variável
 }
 
 function getWeekNumber(date) {
@@ -165,7 +165,7 @@ function getWeekNumber(date) {
     return `${d.getUTCFullYear()}-${String(weekNo).padStart(2, '0')}`;
 }
 
-// Função para verificar se a data mudou e resetar o contador diário de debugs E as recompensas pagas
+// Função para verificar se a data mudou e resetar o contador diário de debugs E a receita diária de debugs
 function checkAndResetDailyDebugs() {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Zera hora, minuto, segundo, milissegundo para comparação de data
@@ -179,16 +179,14 @@ function checkAndResetDailyDebugs() {
     if (!lastDebugDay || today.getTime() > lastDebugDay.getTime()) {
         console.log(`Novo dia detectado. Resetando debugs diários de ${gameState.dailyDebugsCompleted} para 0.`);
         gameState.dailyDebugsCompleted = 0;
-        // Não precisamos mais resetar 'debugRewardMilestonesPaid' ou 'dailyDebugRewardsPaid'
-        // porque o cálculo é feito sobre o 'dailyDebugsCompleted' acumulado no dia.
+        // Zera a receita acumulada dos debugs apenas para o dia atual
+        gameState.dailyDebugRevenueAccumulated = 0;
         gameState.lastDebugDate = today.toISOString(); // Atualiza a data do último debug
-        // Resetamos também a receita simulada diária para que o cálculo comece do zero para o dia
-        gameState.simulatedRevenue = 0; // Importante para o cálculo incremental de 'debugRewardToAdd'
         saveGameState(); // Salva o estado após o reset
     }
 }
 
-// NOVO: Função para gerar e armazenar o resumo diário
+// Função para gerar e armazenar o resumo diário
 function generateDailySummary() {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Zera hora para comparação
@@ -218,7 +216,7 @@ function generateDailySummary() {
                 projectsCompleted: 0,
                 journalEntries: 0,
                 projectActions: 0, // Para pausas/retomas de projetos
-                revenueGained: 0
+                revenueGained: 0 // A receita total que foi ganha nas atividades do dia anterior
             };
 
             yesterdayActivities.forEach(activity => {
@@ -270,7 +268,7 @@ function generateDailySummary() {
     }
 }
 
-// NOVO: Função para atualizar a frase motivacional diária
+// Função para atualizar a frase motivacional diária
 function updateMotivationalPhrase() {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -463,7 +461,7 @@ function updateUI() {
     breakTimeInput.value = gameState.pomodoro.breakDuration / 60;
     updatePomodoroDisplay();
 
-    updateMotivationalPhrase(); // NOVO: Atualiza a frase motivacional
+    updateMotivationalPhrase();
 }
 
 function addActivityToList(type, detail, extraData = {}) {
@@ -488,9 +486,8 @@ function addActivityToList(type, detail, extraData = {}) {
     const MAX_RECENT_ACTIVITIES_DISPLAY = 5;
     gameState.recentActivities = gameState.activityHistory.filter(act => !act.dailySummary).slice(0, MAX_RECENT_ACTIVITIES_DISPLAY);
 
-
     updateRecentActivityList();
-    updateActivityHistoryList();
+    // Não chama updateActivityHistoryList aqui pois ela será chamada por updateUI
 }
 
 function updateRecentActivityList() {
@@ -526,7 +523,12 @@ function updateActivityHistoryList() {
     }
 
     // Sort activities by date in descending order
-    const sortedActivities = [...gameState.activityHistory].sort((a, b) => new Date(b.dateObj) - new Date(a.dateObj));
+    const sortedActivities = [...gameState.activityHistory].sort((a, b) => {
+        // Garante que 'dateObj' seja um objeto Date para a comparação
+        const dateA = typeof a.dateObj === 'string' ? new Date(a.dateObj) : a.dateObj;
+        const dateB = typeof b.dateObj === 'string' ? new Date(b.dateObj) : b.dateObj;
+        return dateB - dateA;
+    });
 
     sortedActivities.forEach(activity => {
         const listItem = document.createElement('li');
@@ -540,7 +542,7 @@ function updateActivityHistoryList() {
             activityDetail = `Aula: "${activity.lessonTitle}"` + (activity.lessonNotes ? ` - Anotações: "${activity.lessonNotes.substring(0, 50)}..."` : '');
         } else if (activity.type === 'Diário' && activity.journalTitle) {
             activityDetail = `Diário: "${activity.journalTitle}"`;
-        } else if (activity.type === 'Sistema' && activity.systemMessage) {
+        } else if (activity.type === 'Sistema') { // 'systemMessage' não é uma propriedade universal, use 'type'
             activityDetail = activity.detail;
         }
 
@@ -551,7 +553,6 @@ function updateActivityHistoryList() {
         activityHistoryListElement.appendChild(listItem);
     });
 }
-
 
 function saveGameState() {
     localStorage.setItem('gamificationGameState', JSON.stringify(gameState));
@@ -569,7 +570,7 @@ function loadGameState() {
                 // Garante que sub-objetos críticos sejam mesclados corretamente ou inicializados
                 pomodoro: { ...gameState.pomodoro, ...(parsedState.pomodoro || {}) },
                 exercisesPerWeek: { ...gameState.exercisesPerWeek, ...(parsedState.exercisesPerWeek || {}) },
-                dailyActivitySummary: { ...gameState.dailyActivitySummary, ...(parsedState.dailyActivitySummary || {}) }, // NOVO
+                dailyActivitySummary: { ...gameState.dailyActivitySummary, ...(parsedState.dailyActivitySummary || {}) },
             };
 
             // Correções de tipo e valores padrão para arrays que podem ter sido nulos/undefined
@@ -579,12 +580,12 @@ function loadGameState() {
             if (!Array.isArray(gameState.activityHistory)) {
                 gameState.activityHistory = [];
             } else {
-                // Converte dateObj para objeto Date se for string ISO
+                // Converte dateObj para objeto Date se for string ISO para operações de data
                 gameState.activityHistory.forEach(activity => {
                     if (typeof activity.dateObj === 'string' && !isNaN(new Date(activity.dateObj))) {
                         activity.dateObj = new Date(activity.dateObj);
                     } else if (!(activity.dateObj instanceof Date)) {
-                        activity.dateObj = new Date(); // Fallback
+                        activity.dateObj = new Date(); // Fallback seguro
                     }
                 });
             }
@@ -609,14 +610,16 @@ function loadGameState() {
             if (typeof gameState.lastDebugDate === 'undefined') {
                 gameState.lastDebugDate = null;
             }
-            // Não precisamos mais inicializar debugRewardMilestonesPaid ou dailyDebugRewardsPaid
-            if (typeof gameState.lastDailySummaryDate === 'undefined') { // NOVO
+            if (typeof gameState.dailyDebugRevenueAccumulated === 'undefined') { // NOVO
+                gameState.dailyDebugRevenueAccumulated = 0;
+            }
+            if (typeof gameState.lastDailySummaryDate === 'undefined') {
                 gameState.lastDailySummaryDate = null;
             }
-            if (typeof gameState.currentMotivationalPhrase === 'undefined') { // NOVO
+            if (typeof gameState.currentMotivationalPhrase === 'undefined') {
                 gameState.currentMotivationalPhrase = "";
             }
-            if (typeof gameState.lastMotivationalPhraseDate === 'undefined') { // NOVO
+            if (typeof gameState.lastMotivationalPhraseDate === 'undefined') {
                 gameState.lastMotivationalPhraseDate = null;
             }
 
@@ -645,7 +648,6 @@ function recalculateMetrics() {
     gameState.totalFollowers = followersXP + followersBonusTotal;
 }
 
-
 function renderExercisesTable() {
     exercisesTableBody.innerHTML = '';
 
@@ -671,7 +673,6 @@ function renderExercisesTable() {
     });
 }
 
-
 // ===============================================
 // 4. Lógica de Gerenciamento de Projetos
 // ===============================================
@@ -692,7 +693,7 @@ function createNewProject() {
         renderActiveProjects();
         addActivityToList('Projeto Criado', `Novo projeto: "${projectName}"`);
     } else {
-        console.log('Por favor, digite um nome para o projeto.');
+        alert('Por favor, digite um nome para o projeto.'); // Usar alert para feedback ao usuário
     }
 }
 
@@ -727,7 +728,7 @@ function renderActiveProjects() {
             const project = gameState.activeProjects.find(p => p.id === projectId);
             if (!project) return;
 
-            const action = event.target.classList[0];
+            const action = event.target.classList[0]; // 'pause', 'resume', 'complete', 'archive'
             project.lastUpdate = new Date().toLocaleDateString('pt-BR');
 
             if (action === 'pause') {
@@ -748,7 +749,7 @@ function renderActiveProjects() {
                 gameState.projectsCompleted++;
                 gameState.totalXP += XP_BONUS_PER_PROJECT;
                 gameState.totalFollowers += FOLLOWERS_BONUS_PER_PROJECT;
-                gameState.simulatedRevenue += REVENUE_PER_PROJECT;
+                gameState.simulatedRevenue += REVENUE_PER_PROJECT; // Adiciona ao acumulado total de receita
                 addActivityToList('Projeto Concluído', `"${project.name}" concluído! Ganhou ${XP_BONUS_PER_PROJECT} XP, ${FOLLOWERS_BONUS_PER_PROJECT} seguidores e R$${REVENUE_PER_PROJECT.toFixed(2).replace('.', ',')}.`);
             } else if (action === 'archive') {
                 // Remove de projetos ativos sem adicionar a concluídos
@@ -782,7 +783,6 @@ function renderCompletedProjects() {
 
 // Event Listener para adicionar aula
 addLessonButton.addEventListener('click', () => {
-    // Preenche o modal com dados existentes se estiver editando (opcional, por enquanto apenas adiciona)
     lessonTitleInput.value = '';
     lessonNotesTextarea.value = '';
     lessonModal.style.display = 'block';
@@ -806,8 +806,8 @@ saveLessonDetailsButton.addEventListener('click', () => {
     }
 });
 
-// Nova função para calcular o total de receita dado um número de debugs
-function calculateTotalDebugRevenue(numDebugs) {
+// Nova função para calcular o total de receita dado um número de debugs (para o dia atual)
+function calculateTotalDebugRevenueForDailyCount(numDebugs) {
     let totalRevenue = 0;
 
     // Se o número de debugs é menor ou igual a 50
@@ -837,8 +837,8 @@ function calculateTotalDebugRevenue(numDebugs) {
 
 // Event Listener para resolver debug
 resolveDebugButton.addEventListener('click', () => {
-    gameState.exercisesCompleted++; // Contador geral de debugs
-    gameState.dailyDebugsCompleted++; // Contador diário de debugs
+    gameState.exercisesCompleted++;     // Contador geral de debugs (todos os tempos)
+    gameState.dailyDebugsCompleted++;   // Contador diário de debugs
 
     const currentWeek = getWeekNumber(new Date());
     gameState.exercisesPerWeek[currentWeek] = (gameState.exercisesPerWeek[currentWeek] || 0) + 1;
@@ -846,23 +846,25 @@ resolveDebugButton.addEventListener('click', () => {
     let debugRewardToAdd = 0;
     let rewardMessage = '';
 
-    // Calcula a receita total que DEVERIA ter sido acumulada até agora
-    const totalRevenueExpected = calculateTotalDebugRevenue(gameState.dailyDebugsCompleted);
+    // Calcula a receita total que DEVERIA ter sido acumulada pelos debugs do DIA ATUAL
+    const totalRevenueExpectedForDailyDebugs = calculateTotalDebugRevenueForDailyCount(gameState.dailyDebugsCompleted);
 
-    // A recompensa a adicionar é a diferença entre o que deveria ter e o que já foi acumulado
-    debugRewardToAdd = totalRevenueExpected - gameState.simulatedRevenue;
+    // A recompensa a adicionar é a diferença entre o que deveria ter sido acumulado NO DIA e o que já foi acumulado NO DIA
+    debugRewardToAdd = totalRevenueExpectedForDailyDebugs - gameState.dailyDebugRevenueAccumulated;
 
     // Garante que não adicione valores negativos ou zero desnecessariamente
     if (debugRewardToAdd < 0) {
-        debugRewardToAdd = 0;
+        debugRewardToAdd = 0; // Não deve acontecer com a lógica correta, mas é um safeguard
         console.warn("Receita a adicionar negativa, ajustado para zero. Verifique a lógica ou estado salvo.");
     }
 
     if (debugRewardToAdd > 0) {
+        // Adiciona ao total acumulado de receita (de todos os tempos)
+        gameState.simulatedRevenue += debugRewardToAdd;
+        // Acumula a receita de debugs apenas para o dia atual
+        gameState.dailyDebugRevenueAccumulated += debugRewardToAdd;
         rewardMessage = ` Recebeu R$${debugRewardToAdd.toFixed(2).replace('.', ',')} por debugs.`;
     }
-
-    gameState.simulatedRevenue += debugRewardToAdd;
 
     addActivityToList('Exercício', `Debug resolvido! Total de debugs diários: ${gameState.dailyDebugsCompleted}.` + (rewardMessage || ''));
     saveGameState();
@@ -1004,7 +1006,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updatePomodoroDisplay();
                 saveGameState();
             }
-            saveGameState();
+            saveGameState(); // Salva o estado a cada segundo para persistir o progresso do timer
         }, 1000);
     } else {
         // Se o pomodoro não estava rodando ou já terminou, garante que o display e o botão estejam corretos
@@ -1020,17 +1022,3 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePomodoroDisplay();
     }
 });
-function adjustMainContentMargin() {
-    const header = document.querySelector('header.fixed-dashboard');
-    const mainContent = document.querySelector('main.content-below-dashboard');
-    if (header && mainContent) {
-        const headerHeight = header.offsetHeight; // Obtém a altura renderizada do cabeçalho
-        // Adiciona um pouco de padding extra para garantir
-        const extraPadding = 20; // Ajuste conforme necessário
-        mainContent.style.paddingTop = `${headerHeight + extraPadding}px`;
-    }
-}
-
-// Chame esta função na inicialização do jogo e ao redimensionar a janela
-document.addEventListener('DOMContentLoaded', adjustMainContentMargin);
-window.addEventListener('resize', adjustMainContentMargin);

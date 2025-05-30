@@ -13,6 +13,10 @@
     --card-background: #ffffff;
     --border-color: #e9ecef;
     --shadow-color: rgba(0, 0, 0, 0.1);
+
+    /* Variáveis CSS para controle dinâmico da altura do dashboard via JS */
+    --dashboard-height: 280px;
+    /* Valor padrão para mobile, será ajustado pelo JS */
 }
 
 body {
@@ -24,7 +28,20 @@ body {
     line-height: 1.6;
 }
 
-/* --- Header Fixo (Dashboard) - REVISADO --- */
+/* Utilitários de Acessibilidade */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* --- Header Fixo (Dashboard) --- */
 header.fixed-dashboard {
     position: fixed;
     top: 0;
@@ -33,7 +50,8 @@ header.fixed-dashboard {
     background-color: var(--card-background);
     box-shadow: 0 2px 5px var(--shadow-color);
     z-index: 1000;
-    padding: 10px 0;
+    padding: 10px 15px;
+    /* Adicionado padding lateral */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
@@ -51,8 +69,8 @@ header.fixed-dashboard {
     /* Centraliza as métricas em mobile */
     gap: 8px 15px;
     /* Espaçamento entre métricas */
-    width: 95%;
-    /* Ocupa a maior parte da largura */
+    width: 100%;
+    /* Ocupa a largura total dentro do header padding */
     padding: 5px 0;
 }
 
@@ -101,8 +119,8 @@ header.fixed-dashboard {
     padding: 10px 15px;
     border-radius: 8px;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
-    width: 95%;
-    /* Ocupa a maior parte da largura em mobile */
+    width: 100%;
+    /* Ocupa a largura total dentro do header padding */
     box-sizing: border-box;
     height: fit-content;
     text-align: center;
@@ -157,10 +175,9 @@ header.fixed-dashboard {
 /* Conteúdo Principal (Ajuste de Margem Superior) */
 main.content-below-dashboard {
     padding: 20px;
-    /* Adiciona um padding-top para o conteúdo rolar abaixo da dashboard fixa */
-    /* Este valor será ajustado pelas media queries */
-    padding-top: 280px;
-    /* Valor padrão para mobile (será sobrescrito) */
+    /* Padding geral para o conteúdo */
+    padding-top: calc(var(--dashboard-height) + 20px);
+    /* Ajusta padding superior dinamicamente */
     margin-top: 0;
     box-sizing: border-box;
     display: flex;
@@ -334,7 +351,6 @@ section h3 {
     border-radius: 4px;
     text-align: center;
 }
-
 
 /* Project Management */
 .project-management {
@@ -583,6 +599,7 @@ section h3 {
 .modal-content input[type="text"],
 .modal-content textarea {
     width: calc(100% - 22px);
+    /* Ajusta para considerar padding e borda */
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -599,10 +616,11 @@ section h3 {
 .modal-content button.primary-button {
     margin-top: 20px;
     align-self: flex-end;
+    /* Alinha o botão à direita dentro do modal */
     padding: 10px 20px;
 }
 
-/* Journal Modal Specifics (now applies to all modals with textareas/inputs) */
+/* Journal Modal Specifics & Completed Projects List */
 .journal-entries-list,
 .completed-projects-list {
     list-style: none;
@@ -687,10 +705,80 @@ section h3 {
     padding: 20px;
 }
 
+/* Estilos para a seção de História de Desenvolvimento */
+.development-history {
+    background-color: #e0f2f7;
+    border-left: 5px solid #2980b9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.development-history h3 {
+    color: #2980b9;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.2em;
+    border-bottom: 1px solid #cceeff;
+    padding-bottom: 10px;
+}
+
+.history-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.95em;
+    color: #333;
+}
+
+.history-list li {
+    margin-bottom: 10px;
+    padding-left: 25px;
+    position: relative;
+    line-height: 1.4;
+}
+
+.history-list li::before {
+    content: '🚀';
+    /* Ícone de foguete para itens da história */
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 1.1em;
+}
+
+.history-tip {
+    font-style: italic;
+    text-align: center;
+    margin-top: 15px;
+    color: #555;
+    font-size: 0.85em;
+}
+
+/* NOVO: Classe para resumir atividades diárias no histórico */
+.activity-item.daily-summary-item {
+    font-weight: bold;
+    background-color: #e6ffe6;
+    /* Um verde bem suave */
+    border-left: 5px solid var(--primary-color);
+    padding-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.no-activities-message,
+.no-projects-message {
+    text-align: center;
+    color: #777;
+    padding: 20px;
+    font-style: italic;
+}
+
 
 /* --- MEDIA QUERIES PARA RESPONSIVIDADE --- */
 
-/* Padrão para Mobile (0px a 767px) */
+/* Mobile (0px a 767px) */
 @media (max-width: 767px) {
     header.fixed-dashboard {
         flex-direction: column;
@@ -715,7 +803,6 @@ section h3 {
         max-width: calc(33.33% - 10px);
         /* Limita a largura para 3 colunas */
         min-width: 70px;
-        /* Pode ser necessário reduzir um pouco mais */
         padding: 5px 0;
     }
 
@@ -765,9 +852,6 @@ section h3 {
     }
 
     main.content-below-dashboard {
-        /* Será ajustado via JS para ser dinâmico */
-        padding-top: var(--dashboard-height-mobile);
-        /* Usaremos uma variável CSS para JS */
         padding-left: 15px;
         padding-right: 15px;
         gap: 20px;
@@ -902,12 +986,10 @@ section h3 {
 
     .metric-label {
         font-size: 0.8em;
-        /* Volta ao tamanho normal */
     }
 
     .metric-value {
         font-size: 1.2em;
-        /* Volta ao tamanho normal */
     }
 
     .metric-item.star-rating .metric-value {
@@ -935,9 +1017,6 @@ section h3 {
     }
 
     main.content-below-dashboard {
-        /* Será ajustado via JS */
-        padding-top: var(--dashboard-height-tablet);
-        /* Usaremos uma variável CSS para JS */
         flex-direction: row;
         /* Seções em linha */
         flex-wrap: wrap;
@@ -1043,9 +1122,6 @@ section h3 {
     }
 
     main.content-below-dashboard {
-        /* Será ajustado via JS */
-        padding-top: var(--dashboard-height-desktop);
-        /* Usaremos uma variável CSS para JS */
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
@@ -1065,9 +1141,10 @@ section h3 {
 
     section {
         flex: 1 1 calc(33.33% - 30px);
-        /* Tenta 3 colunas padrão */
+        /* Tenta 3 colunas padrão para a maioria das seções */
     }
 
+    /* Algumas seções podem ter 2 colunas para mais espaço ou destaque */
     .timers-section,
     .project-management,
     .full-activity-history,
@@ -1084,73 +1161,4 @@ section h3 {
         width: 60%;
         max-width: 800px;
     }
-}
-
-/* Estilos para a nova seção de História */
-.development-history {
-    background-color: #e0f2f7;
-    border-left: 5px solid #2980b9;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: left;
-}
-
-.development-history h3 {
-    color: #2980b9;
-    margin-bottom: 15px;
-    text-align: center;
-    font-size: 1.2em;
-    border-bottom: 1px solid #cceeff;
-    padding-bottom: 10px;
-}
-
-.history-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    font-size: 0.95em;
-    color: #333;
-}
-
-.history-list li {
-    margin-bottom: 10px;
-    padding-left: 25px;
-    position: relative;
-    line-height: 1.4;
-}
-
-.history-list li::before {
-    content: '🚀';
-    position: absolute;
-    left: 0;
-    top: 0;
-    font-size: 1.1em;
-}
-
-.history-tip {
-    font-style: italic;
-    text-align: center;
-    margin-top: 15px;
-    color: #555;
-    font-size: 0.85em;
-}
-
-/* NOVO: Classe para resumir atividades diárias no histórico */
-.activity-item.daily-summary-item {
-    font-weight: bold;
-    background-color: #e6ffe6;
-    /* Um verde bem suave */
-    border-left: 5px solid var(--primary-color);
-    padding-left: 10px;
-    margin-top: 10px;
-    margin-bottom: 5px;
-}
-
-.no-activities-message,
-.no-projects-message {
-    text-align: center;
-    color: #777;
-    padding: 20px;
-    font-style: italic;
 }
