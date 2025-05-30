@@ -8,8 +8,12 @@ const XP_BONUS_PER_PROJECT = 1000;
 const FOLLOWERS_PER_1000_XP = 42;
 const FOLLOWERS_BONUS_PER_PROJECT = 50;
 const REVENUE_PER_PROJECT = 300;
-const EXERCISE_REVENUE_PER_30_DEBUG = 50; // Corrigido para 50
-const EXERCISE_REVENUE_PER_50_DEBUG = 150; // Corrigido para 150 (este será um adicional aos 30 debugs)
+
+// Novas constantes para as recompensas de debug, mais claras e alinhadas à sua lógica
+const REWARD_FOR_FIRST_30 = 50;
+const REWARD_FOR_FIRST_50 = 150; // Total para os primeiros 50
+const REWARD_FOR_NEXT_30_AFTER_50 = 30; // Para cada bloco de 30 após os múltiplos de 50 (ex: 51-80, 101-130)
+
 const MONTHLY_COST = 600;
 const REAL_REWARD_CONVERSION_FACTOR = 0.2; // 200/1000 = 0.2 -> 20% da receita líquida.
 const FOLLOWERS_FOR_10_STARS = 3086; // Meta para 10 estrelas
@@ -33,7 +37,7 @@ const MOTIVATIONAL_PHRASES = [
     "Seu único limite é você mesmo.",
     "Aprenda com o passado, viva o presente, sonhe com o futuro.",
     "Faça o que for preciso, mas nunca pare de sonhar.",
-    "A vida é uma jornada, não um destino.",
+    "A vida é uma jornada, não é um destino.",
     "Quebre suas barreiras. Supere-se!",
     "Acredite que você pode, e você estará no meio do caminho.",
     "Dê o seu melhor e deixe o resto acontecer.",
@@ -76,10 +80,8 @@ let gameState = {
     completedProjects: [], // Lista de projetos concluídos
     journalEntries: [], // Entradas do diário
     lessonEntries: [], // Entradas de aulas teóricas com título e anotações
-    dailyDebugRewardsPaid: { // Quais marcos foram pagos no dia atual
-        hasPaid30: false,
-        hasPaid50: false
-    },
+    // Removido: dailyDebugRewardsPaid e debugRewardMilestonesPaid,
+    // pois o cálculo é agora de "valor total"
     currentMotivationalPhrase: "", // NOVO: Frase motivacional do dia
     lastMotivationalPhraseDate: null // NOVO: Data da última atualização da frase
 };
@@ -177,8 +179,11 @@ function checkAndResetDailyDebugs() {
     if (!lastDebugDay || today.getTime() > lastDebugDay.getTime()) {
         console.log(`Novo dia detectado. Resetando debugs diários de ${gameState.dailyDebugsCompleted} para 0.`);
         gameState.dailyDebugsCompleted = 0;
-        gameState.dailyDebugRewardsPaid = { hasPaid30: false, hasPaid50: false };
+        // Não precisamos mais resetar 'debugRewardMilestonesPaid' ou 'dailyDebugRewardsPaid'
+        // porque o cálculo é feito sobre o 'dailyDebugsCompleted' acumulado no dia.
         gameState.lastDebugDate = today.toISOString(); // Atualiza a data do último debug
+        // Resetamos também a receita simulada diária para que o cálculo comece do zero para o dia
+        gameState.simulatedRevenue = 0; // Importante para o cálculo incremental de 'debugRewardToAdd'
         saveGameState(); // Salva o estado após o reset
     }
 }
@@ -563,11 +568,9 @@ function loadGameState() {
                 ...parsedState,
                 // Garante que sub-objetos críticos sejam mesclados corretamente ou inicializados
                 pomodoro: { ...gameState.pomodoro, ...(parsedState.pomodoro || {}) },
-                dailyDebugRewardsPaid: { ...gameState.dailyDebugRewardsPaid, ...(parsedState.dailyDebugRewardsPaid || {}) },
                 exercisesPerWeek: { ...gameState.exercisesPerWeek, ...(parsedState.exercisesPerWeek || {}) },
                 dailyActivitySummary: { ...gameState.dailyActivitySummary, ...(parsedState.dailyActivitySummary || {}) }, // NOVO
             };
-
 
             // Correções de tipo e valores padrão para arrays que podem ter sido nulos/undefined
             if (!Array.isArray(gameState.recentActivities)) {
@@ -606,12 +609,7 @@ function loadGameState() {
             if (typeof gameState.lastDebugDate === 'undefined') {
                 gameState.lastDebugDate = null;
             }
-            if (typeof gameState.dailyDebugRewardsPaid.hasPaid30 === 'undefined') {
-                gameState.dailyDebugRewardsPaid.hasPaid30 = false;
-            }
-            if (typeof gameState.dailyDebugRewardsPaid.hasPaid50 === 'undefined') {
-                gameState.dailyDebugRewardsPaid.hasPaid50 = false;
-            }
+            // Não precisamos mais inicializar debugRewardMilestonesPaid ou dailyDebugRewardsPaid
             if (typeof gameState.lastDailySummaryDate === 'undefined') { // NOVO
                 gameState.lastDailySummaryDate = null;
             }
@@ -621,7 +619,6 @@ function loadGameState() {
             if (typeof gameState.lastMotivationalPhraseDate === 'undefined') { // NOVO
                 gameState.lastMotivationalPhraseDate = null;
             }
-
 
         } catch (e) {
             console.error("Erro ao carregar gameState do localStorage:", e);
@@ -809,6 +806,34 @@ saveLessonDetailsButton.addEventListener('click', () => {
     }
 });
 
+// Nova função para calcular o total de receita dado um número de debugs
+function calculateTotalDebugRevenue(numDebugs) {
+    let totalRevenue = 0;
+
+    // Se o número de debugs é menor ou igual a 50
+    if (numDebugs <= 50) {
+        if (numDebugs >= 50) {
+            totalRevenue = REWARD_FOR_FIRST_50; // Para 50 debugs, total é R$150
+        } else if (numDebugs >= 30) {
+            totalRevenue = REWARD_FOR_FIRST_30; // Para 30-49 debugs, total é R$50
+        }
+    } else {
+        // Para mais de 50 debugs, aplicamos a lógica de blocos
+        const numFiftyBlocks = Math.floor(numDebugs / 50);
+        totalRevenue += numFiftyBlocks * REWARD_FOR_FIRST_50; // Cada bloco de 50 vale R$150
+
+        const remainingDebugs = numDebugs % 50;
+
+        // Se sobrou algum debug após os blocos de 50
+        if (remainingDebugs > 0) {
+            // E se o restante cobrir um "bloco" de 30
+            if (remainingDebugs >= 30) {
+                totalRevenue += REWARD_FOR_NEXT_30_AFTER_50; // Adiciona R$30 por esse bloco residual de 30
+            }
+        }
+    }
+    return totalRevenue;
+}
 
 // Event Listener para resolver debug
 resolveDebugButton.addEventListener('click', () => {
@@ -821,23 +846,25 @@ resolveDebugButton.addEventListener('click', () => {
     let debugRewardToAdd = 0;
     let rewardMessage = '';
 
-    // Recompensa de 30 debugs diários (R$50)
-    if (gameState.dailyDebugsCompleted >= 30 && !gameState.dailyDebugRewardsPaid.hasPaid30) {
-        debugRewardToAdd += EXERCISE_REVENUE_PER_30_DEBUG;
-        gameState.dailyDebugRewardsPaid.hasPaid30 = true;
-        rewardMessage += ` Recebeu R$${EXERCISE_REVENUE_PER_30_DEBUG.toFixed(2).replace('.', ',')} (30 debugs diários).`;
+    // Calcula a receita total que DEVERIA ter sido acumulada até agora
+    const totalRevenueExpected = calculateTotalDebugRevenue(gameState.dailyDebugsCompleted);
+
+    // A recompensa a adicionar é a diferença entre o que deveria ter e o que já foi acumulado
+    debugRewardToAdd = totalRevenueExpected - gameState.simulatedRevenue;
+
+    // Garante que não adicione valores negativos ou zero desnecessariamente
+    if (debugRewardToAdd < 0) {
+        debugRewardToAdd = 0;
+        console.warn("Receita a adicionar negativa, ajustado para zero. Verifique a lógica ou estado salvo.");
     }
 
-    // Recompensa de 50 debugs diários (R$150 adicionais)
-    if (gameState.dailyDebugsCompleted >= 50 && !gameState.dailyDebugRewardsPaid.hasPaid50) {
-        debugRewardToAdd += EXERCISE_REVENUE_PER_50_DEBUG;
-        gameState.dailyDebugRewardsPaid.hasPaid50 = true;
-        rewardMessage += ` Recebeu R$${EXERCISE_REVENUE_PER_50_DEBUG.toFixed(2).replace('.', ',')} adicionais (50 debugs diários).`;
+    if (debugRewardToAdd > 0) {
+        rewardMessage = ` Recebeu R$${debugRewardToAdd.toFixed(2).replace('.', ',')} por debugs.`;
     }
 
     gameState.simulatedRevenue += debugRewardToAdd;
 
-    addActivityToList('Exercício', `Debug resolvido! Total de debugs diários: ${gameState.dailyDebugsCompleted}.` + rewardMessage);
+    addActivityToList('Exercício', `Debug resolvido! Total de debugs diários: ${gameState.dailyDebugsCompleted}.` + (rewardMessage || ''));
     saveGameState();
     recalculateMetrics(); // Para atualizar os followers, caso XP mude (embora debugs não deem XP diretamente)
     updateUI();
