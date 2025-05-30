@@ -1,16 +1,37 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gamificação DEV</title>
+
+    <base href="/app/GamificacaoPessoal/"> 
+
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <!-- 'theme-color' meta tag is not fully supported in Firefox and Opera, but is harmless to include. -->
-    <!-- Removed theme-color meta tags due to lack of support in Firefox and Opera -->
-    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link rel="shortcut icon" href="icons/favicon.ico">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="icons/ms-icon-144x144.png">
+    <!-- <meta name="theme-color" content="#007bff">
+    <meta name="theme-color" content="#007bff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#0056b3" media="(prefers-color-scheme: dark)"> -->
+    <!-- 'theme-color' meta tags are commented out due to lack of support in Firefox, Firefox for Android, and Opera. Consider using CSS color-scheme or fallback styles for cross-browser compatibility. -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // O caminho aqui é relativo ao 'base href' acima, então 'service-worker.js' é suficiente
+                navigator.serviceWorker.register('service-worker.js') 
+                    .then(reg => console.log('Service Worker Registrado!', reg))
+                    .catch(err => console.log('Erro ao registrar Service Worker:', err));
+            });
+        }
+    </script>
 </head>
 
 <body>

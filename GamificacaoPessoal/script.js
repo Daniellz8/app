@@ -18,11 +18,9 @@ const FOLLOWERS_FOR_10_STARS = 3086; // Meta para 10 estrelas
 let gameState = {
     totalXP: 0,
     lessonsCompleted: 0,
-    // NOVO: Contador de debugs diários e data do último debug
     dailyDebugsCompleted: 0, // Debugs feitos no dia atual
     lastDebugDate: null,     // Data do último debug registrado (para reset diário)
-    // REMOVIDO: exercisesCompleted não será mais usado para o total de debugs, mas sim para contadores diários.
-    exercisesCompleted: 0, // Manter por enquanto, caso seja usado na UI para mostrar o total de todos os tempos. Se não for, podemos remover.
+    exercisesCompleted: 0, // Contador total de debugs de todos os tempos
     projectsCompleted: 0,
     simulatedRevenue: 0, // Receita total simulada (acumulativa)
     totalFollowers: 0,
@@ -41,16 +39,14 @@ let gameState = {
     completedProjects: [], // Lista de projetos concluídos
     journalEntries: [], // Entradas do diário
     lessonEntries: [], // Entradas de aulas teóricas com título e anotações
-    // NOVO: Rastreamento para recompensas de debug repetitivas DIÁRIAS
     dailyDebugRewardsPaid: { // Quais marcos foram pagos no dia atual
         hasPaid30: false,
         hasPaid50: false
     }
-    // REMOVIDO: paid30DebugsBlocks e paid50DebugsBlocks não são mais necessários para a lógica diária
 };
 
 // ===============================================
-// 2. Referências aos Elementos HTML (DOM) - SEM ALTERAÇÕES AQUI
+// 2. Referências aos Elementos HTML (DOM)
 // ===============================================
 
 const headerElement = document.querySelector('header.fixed-dashboard');
@@ -125,7 +121,7 @@ function getWeekNumber(date) {
     return `${d.getUTCFullYear()}-${String(weekNo).padStart(2, '0')}`;
 }
 
-// NOVO: Função para verificar se a data mudou e resetar o contador diário de debugs
+// Função para verificar se a data mudou e resetar o contador diário de debugs
 function checkAndResetDailyDebugs() {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Zera hora, minuto, segundo, milissegundo para comparação de data
@@ -137,12 +133,10 @@ function checkAndResetDailyDebugs() {
     }
 
     if (!lastDebugDay || today.getTime() > lastDebugDay.getTime()) {
-        // Se a data mudou ou é o primeiro debug
         console.log(`Novo dia detectado. Resetando debugs diários de ${gameState.dailyDebugsCompleted} para 0.`);
         gameState.dailyDebugsCompleted = 0;
         gameState.dailyDebugRewardsPaid = { hasPaid30: false, hasPaid50: false };
         gameState.lastDebugDate = today.toISOString(); // Atualiza a data do último debug
-        // Se desejar, adicione uma entrada no histórico informando o reset
         addActivityToList('Sistema', 'Contador de debugs diários resetado.', { systemMessage: true });
         saveGameState(); // Salva o estado após o reset
     }
@@ -229,15 +223,17 @@ function startPomodoro() {
             pomodoroInterval = null;
             gameState.pomodoro.isRunning = false;
 
+            // Substituído alert() por uma função de modal customizada se você tiver
+            // Ou use um console.log para depuração
+            console.log(gameState.pomodoro.isFocusMode ? 'Tempo de FOCO terminou! Hora do descanso.' : 'Tempo de DESCANSO terminou! Hora de voltar ao foco.');
+
             if (gameState.pomodoro.isFocusMode) {
-                alert('Tempo de FOCO terminou! Hora do descanso.');
                 gameState.pomodoro.isFocusMode = false;
                 gameState.pomodoro.remainingSeconds = gameState.pomodoro.breakDuration;
                 startPomodoroButton.textContent = 'Iniciar Descanso';
                 startPomodoroButton.classList.remove('primary-button');
                 startPomodoroButton.classList.add('secondary-button');
             } else {
-                alert('Tempo de DESCANSO terminou! Hora de voltar ao foco.');
                 gameState.pomodoro.isFocusMode = true;
                 gameState.pomodoro.remainingSeconds = gameState.pomodoro.focusDuration;
                 startPomodoroButton.textContent = 'Iniciar Foco';
@@ -375,7 +371,7 @@ function updateActivityHistoryList() {
         if (activity.type === 'Aula' && activity.lessonTitle) {
             activityDetail = `Aula: "${activity.lessonTitle}"` + (activity.lessonNotes ? ` - Anotações: "${activity.lessonNotes.substring(0, 50)}..."` : '');
         } else if (activity.type === 'Diário' && activity.journalTitle) {
-            activityDetail = `Diário: "${activity.journalTitle}"`;
+            activityDetail = `Diário: "${journalTitle}"`; // Corrigido para journalTitle
         } else if (activity.type === 'Sistema' && activity.systemMessage) {
             activityDetail = activity.detail;
         }
@@ -406,8 +402,10 @@ function loadGameState() {
                 gameState.activityHistory = [];
             } else {
                 gameState.activityHistory.forEach(activity => {
-                    if (typeof activity.dateObj === 'string') {
+                    if (typeof activity.dateObj === 'string' && !isNaN(new Date(activity.dateObj))) {
                         activity.dateObj = new Date(activity.dateObj);
+                    } else if (!(activity.dateObj instanceof Date)) {
+                        activity.dateObj = new Date();
                     }
                 });
             }
@@ -423,7 +421,7 @@ function loadGameState() {
             } else {
                 gameState.pomodoro.focusDuration = gameState.pomodoro.focusDuration || 25 * 60;
                 gameState.pomodoro.breakDuration = gameState.pomodoro.breakDuration || 5 * 60;
-                if (gameState.pomodoro.remainingSeconds === 0) {
+                if (gameState.pomodoro.remainingSeconds === 0 || typeof gameState.pomodoro.remainingSeconds === 'undefined') {
                     gameState.pomodoro.remainingSeconds = gameState.pomodoro.isFocusMode ? gameState.pomodoro.focusDuration : gameState.pomodoro.breakDuration;
                 }
                 gameState.pomodoro.isRunning = false;
@@ -444,7 +442,6 @@ function loadGameState() {
             if (!Array.isArray(gameState.lessonEntries)) {
                 gameState.lessonEntries = [];
             }
-            // NOVO: Inicializar as novas variáveis de controle de pagamento de debugs diários
             if (typeof gameState.dailyDebugsCompleted === 'undefined') {
                 gameState.dailyDebugsCompleted = 0;
             }
@@ -463,7 +460,6 @@ function loadGameState() {
 
 /**
  * Recalcula todas as métricas do jogo com base nos contadores primários.
- * A receita de debugs é agora tratada como uma adição que ocorre ao atingir marcos diários.
  */
 function recalculateMetrics() {
     // XP
@@ -475,24 +471,6 @@ function recalculateMetrics() {
     let followersXP = Math.floor(gameState.totalXP / 1000) * FOLLOWERS_PER_1000_XP;
     let followersBonusTotal = gameState.projectsCompleted * FOLLOWERS_BONUS_PER_PROJECT;
     gameState.totalFollowers = followersXP + followersBonusTotal;
-
-    // A receita simulada é acumulada diretamente no resolveDebugButton
-    // Apenas garante que a receita de projetos ainda seja somada.
-    gameState.simulatedRevenue += gameState.projectsCompleted * REVENUE_PER_PROJECT; // Isso deve ser a receita base dos projetos, e não adicionada em cada recalculo
-    // REVISÃO: A receita simulada é a SOMA de tudo. Não é para ser adicionada repetidamente.
-    // O ideal é que REVENUE_PER_PROJECT seja adicionado APENAS quando um projeto é concluído.
-    // Vamos remover essa linha e garantir que a receita dos projetos seja adicionada UMA VEZ na conclusão.
-    // A receita de debugs já é adicionada no resolveDebugButton.
-    // Então, recalculateMetrics focaria apenas em XP e Followers.
-    // No entanto, para ser mais "seguro", vamos manter simulatedRevenue como uma soma de tudo.
-    // Se a receita de projetos for um evento único, a receita simulada deve ser tratada como a soma de todas as entradas de dinheiro no histórico.
-    // Por simplicidade atual, vamos deixar simulatedRevenue como a soma do que já foi adicionado + o que está sendo adicionado.
-    // Por agora, vou assumir que a receita de projetos também é um evento único (já tratada).
-
-    // simulatedRevenue já é acumulada nos eventos de conclusão de projetos e debugs.
-    // Esta função recalcula métricas baseadas em contadores.
-    // Não precisamos recalcular a receita simulada aqui se ela é adicionada incrementalmente.
-    // Mantendo a estrutura para XP e Followers.
 }
 
 
@@ -523,7 +501,7 @@ function renderExercisesTable() {
 
 
 // ===============================================
-// 4. Lógica de Gerenciamento de Projetos - SEM ALTERAÇÕES AQUI
+// 4. Lógica de Gerenciamento de Projetos
 // ===============================================
 
 function createNewProject() {
@@ -542,7 +520,8 @@ function createNewProject() {
         renderActiveProjects();
         addActivityToList('Projeto Criado', `Novo projeto: "${projectName}"`);
     } else {
-        alert('Por favor, digite um nome para o projeto.');
+        // Substituído alert() por console.log ou modal customizado
+        console.log('Por favor, digite um nome para o projeto.');
     }
 }
 
@@ -597,12 +576,12 @@ function renderActiveProjects() {
                 gameState.activeProjects = gameState.activeProjects.filter(p => p.id !== projectId);
                 updateUI();
             } else if (action === 'archive') {
-                if (confirm(`Tem certeza que deseja arquivar o projeto "${project.name}"? Ele será removido da lista de ativos.`)) {
-                    gameState.activeProjects = gameState.activeProjects.filter(p => p.id !== projectId);
-                    addActivityToList('Projeto Arquivado', `"${project.name}" foi arquivado (removido da lista de ativos).`);
-                } else {
-                    return;
-                }
+                // Substituído confirm() por console.log ou modal customizado
+                console.log(`Tem certeza que deseja arquivar o projeto "${project.name}"? Ele será removido da lista de ativos.`);
+                // Se você quiser um modal de confirmação, precisará implementá-lo no HTML/CSS/JS
+                // Por agora, apenas remove o projeto diretamente para evitar bloqueio da UI
+                gameState.activeProjects = gameState.activeProjects.filter(p => p.id !== projectId);
+                addActivityToList('Projeto Arquivado', `"${project.name}" foi arquivado (removido da lista de ativos).`);
             }
             saveGameState();
             renderActiveProjects();
@@ -627,7 +606,7 @@ function renderCompletedProjects() {
 
 
 // ===============================================
-// 5. Lógica do Diário - SEM ALTERAÇÕES AQUI
+// 5. Lógica do Diário
 // ===============================================
 
 function saveJournalEntry() {
@@ -635,11 +614,11 @@ function saveJournalEntry() {
     const entryText = journalEntryTextarea.value.trim();
 
     if (!title) {
-        alert('Por favor, digite um título para a entrada do diário.');
+        console.log('Por favor, digite um título para a entrada do diário.'); // Substituído alert()
         return;
     }
     if (!entryText) {
-        alert('Por favor, escreva algo para salvar no diário.');
+        console.log('Por favor, escreva algo para salvar no diário.'); // Substituído alert()
         return;
     }
 
@@ -675,7 +654,7 @@ function renderJournalEntries() {
 }
 
 // ===============================================
-// 6. Lógica do Modal de Aulas Teóricas - SEM ALTERAÇÕES AQUI
+// 6. Lógica do Modal de Aulas Teóricas
 // ===============================================
 
 function saveLessonDetailsAndComplete() {
@@ -683,7 +662,7 @@ function saveLessonDetailsAndComplete() {
     const notes = lessonNotesTextarea.value.trim();
 
     if (!title) {
-        alert('Por favor, digite um título para a aula.');
+        console.log('Por favor, digite um título para a aula.'); // Substituído alert()
         return;
     }
 
@@ -721,126 +700,109 @@ addLessonButton.addEventListener('click', () => {
 saveLessonDetailsButton.addEventListener('click', saveLessonDetailsAndComplete);
 
 
-// NOVO: Lógica para o único botão de "Resolver Debug" com recompensas diárias
+// Lógica para o único botão de "Resolver Debug" com recompensas diárias
 resolveDebugButton.addEventListener('click', () => {
-    // Primeiro, verifica e reseta o contador diário se for um novo dia
+    // 1. Primeiro, verifica e reseta o contador diário se for um novo dia.
     checkAndResetDailyDebugs();
 
-    // Incrementa o contador de debugs diários
+    // 2. Incrementa o contador de debugs diários e o contador total (se ainda usar).
     gameState.dailyDebugsCompleted++;
-    // O contador de exercisesCompleted total pode ser removido se não for usado.
-    // Por enquanto, mantenho para não quebrar outras partes que possam usá-lo para "total de debugs" de todos os tempos.
-    // Se exercisesCompleted for o "total de todos os tempos", ele deve continuar sendo incrementado.
-    // Vamos incrementá-lo para manter o controle total:
-    gameState.exercisesCompleted++; // Contador total de todos os tempos, se necessário para a UI
+    gameState.exercisesCompleted++; // Contador total de todos os tempos, se necessário
 
+    // 3. Adiciona ao registro de exercícios por semana.
     const currentWeek = getWeekNumber(new Date());
     gameState.exercisesPerWeek[currentWeek] = (gameState.exercisesPerWeek[currentWeek] || 0) + 1;
 
-    let debugRevenueToday = 0; // Receita ganha NESTE clique de debug
+    let debugRevenueGained = 0; // Receita ganha NESTE clique de debug
+    let activityDetailMessage = `Debug concluído. Total do dia: ${gameState.dailyDebugsCompleted}.`; // Mensagem base da atividade
 
-    // Lógica de recompensa de 30 debugs diários
-    if (gameState.dailyDebugsCompleted >= 30 && !gameState.dailyDebugRewardsPaid.hasPaid30) {
-        debugRevenueToday += EXERCISE_REVENUE_PER_30_DEBUG;
-        gameState.dailyDebugRewardsPaid.hasPaid30 = true;
-        addActivityToList('Exercício', `Atingiu 30 debugs diários, recebeu R$${EXERCISE_REVENUE_PER_30_DEBUG.toFixed(2).replace('.', ',')}`);
-    }
-
-    // Lógica de recompensa de 50 debugs diários
+    // 4. Lógica de Recompensa de Debugs Diários:
+    // Priorizamos a recompensa de 50 debugs.
     if (gameState.dailyDebugsCompleted >= 50 && !gameState.dailyDebugRewardsPaid.hasPaid50) {
-        debugRevenueToday += EXERCISE_REVENUE_PER_50_DEBUG;
+        if (gameState.dailyDebugRewardsPaid.hasPaid30) {
+            // Se 30 já foi pago, adiciona a diferença para não duplicar o valor do 30
+            debugRevenueGained = EXERCISE_REVENUE_PER_50_DEBUG - EXERCISE_REVENUE_PER_30_DEBUG;
+            activityDetailMessage += ` Além disso, atingiu 50 debugs diários! Recebeu R$${debugRevenueGained.toFixed(2).replace('.', ',')} (ajustado pelo marco de 30 já pago).`;
+        } else {
+            debugRevenueGained = EXERCISE_REVENUE_PER_50_DEBUG;
+            activityDetailMessage += ` Além disso, atingiu 50 debugs diários! Recebeu R$${EXERCISE_REVENUE_PER_50_DEBUG.toFixed(2).replace('.', ',')}.`;
+        }
         gameState.dailyDebugRewardsPaid.hasPaid50 = true;
-        addActivityToList('Exercício', `Atingiu 50 debugs diários, recebeu R$${EXERCISE_REVENUE_PER_50_DEBUG.toFixed(2).replace('.', ',')}`);
+        gameState.dailyDebugRewardsPaid.hasPaid30 = true; // Marca 30 como pago também, pois 50 implica 30
     }
-    // REVISÃO IMPORTANTE: Se a intenção é que 60 debugs paguem mais 50, e 100 paguem mais 150...
-    // A lógica acima paga apenas uma vez 30 e uma vez 50 por dia.
-    // "se repete de 30 em 30 e 50 em 50" implica múltiplos.
-
-    // A lógica anterior (com paid30DebugsBlocks e paid50DebugsBlocks) era para múltiplos.
-    // Vamos adaptar essa lógica dos "blocos" para o contexto diário, mas resetando.
-
-    // NOVO (Adaptado para múltiplos DIÁRIOS):
-    // Rastrear quantos blocos de 30 e 50 foram pagos NO DIA ATUAL
-    let currentDaily30Blocks = Math.floor(gameState.dailyDebugsCompleted / 30);
-    let currentDaily50Blocks = Math.floor(gameState.dailyDebugsCompleted / 50);
-
-    // Se é um novo dia, os contadores de blocos pagos para o dia também são resetados.
-    // Garantir que dailyDebugRewardsPaid tenha contadores para os blocos
-    if (typeof gameState.dailyDebugRewardsPaid.paid30Blocks === 'undefined') {
-        gameState.dailyDebugRewardsPaid.paid30Blocks = 0;
-    }
-    if (typeof gameState.dailyDebugRewardsPaid.paid50Blocks === 'undefined') {
-        gameState.dailyDebugRewardsPaid.paid50Blocks = 0;
+    // Se não atingiu 50 OU já pagou 50, verifica a recompensa de 30.
+    else if (gameState.dailyDebugsCompleted >= 30 && !gameState.dailyDebugRewardsPaid.hasPaid30) {
+        debugRevenueGained = EXERCISE_REVENUE_PER_30_DEBUG;
+        activityDetailMessage += ` Além disso, atingiu 30 debugs diários! Recebeu R$${EXERCISE_REVENUE_PER_30_DEBUG.toFixed(2).replace('.', ',')}.`;
+        gameState.dailyDebugRewardsPaid.hasPaid30 = true;
     }
 
+    // 5. Adiciona a receita ganha (se houver) ao total simulado.
+    gameState.simulatedRevenue += debugRevenueGained;
 
-    // Verifica novos blocos de 30 concluídos no dia
-    if (currentDaily30Blocks > gameState.dailyDebugRewardsPaid.paid30Blocks) {
-        const newBlocks = currentDaily30Blocks - gameState.dailyDebugRewardsPaid.paid30Blocks;
-        for (let i = 0; i < newBlocks; i++) {
-            debugRevenueToday += EXERCISE_REVENUE_PER_30_DEBUG;
-            const milestone = (gameState.dailyDebugRewardsPaid.paid30Blocks + i + 1) * 30;
-            addActivityToList('Exercício', `Debugs #${milestone} concluídos (hoje), recebeu R$${EXERCISE_REVENUE_PER_30_DEBUG.toFixed(2).replace('.', ',')}`);
-        }
-        gameState.dailyDebugRewardsPaid.paid30Blocks = currentDaily30Blocks;
-    }
+    // 6. Adiciona APENAS UMA entrada de atividade com a mensagem detalhada.
+    addActivityToList('Exercício', activityDetailMessage);
 
-    // Verifica novos blocos de 50 concluídos no dia
-    if (currentDaily50Blocks > gameState.dailyDebugRewardsPaid.paid50Blocks) {
-        const newBlocks = currentDaily50Blocks - gameState.dailyDebugRewardsPaid.paid50Blocks;
-        for (let i = 0; i < newBlocks; i++) {
-            debugRevenueToday += EXERCISE_REVENUE_PER_50_DEBUG;
-            const milestone = (gameState.dailyDebugRewardsPaid.paid50Blocks + i + 1) * 50;
-            addActivityToList('Exercício', `Debugs #${milestone} concluídos (hoje), recebeu R$${EXERCISE_REVENUE_PER_50_DEBUG.toFixed(2).replace('.', ',')}`);
-        }
-        gameState.dailyDebugRewardsPaid.paid50Blocks = currentDaily50Blocks;
-    }
+    // 7. Atualiza a data do último debug para a verificação diária.
+    gameState.lastDebugDate = new Date().toISOString();
 
-    gameState.simulatedRevenue += debugRevenueToday; // Adiciona a receita ganha hoje (neste clique) ao total
-
-    recalculateMetrics(); // Recalcular XP e seguidores (a receita já foi adicionada)
+    // 8. Recalcula métricas e atualiza a UI.
+    recalculateMetrics();
     saveGameState();
     updateUI();
 });
 
+// ===============================================
+// 8. Event Listeners e Inicialização
+// ===============================================
 
-// Cronômetro Listeners
 startTimerButton.addEventListener('click', startTimer);
 pauseTimerButton.addEventListener('click', pauseTimer);
 resetTimerButton.addEventListener('click', resetTimer);
 
-// Pomodoro Listeners
-startPomodoroButton.addEventListener('click', startPomodoro);
+startPomodoroButton.addEventListener('click', () => {
+    if (!gameState.pomodoro.isRunning) {
+        gameState.pomodoro.remainingSeconds = gameState.pomodoro.isFocusMode ? gameState.pomodoro.focusDuration : gameState.pomodoro.breakDuration;
+        updatePomodoroDisplay();
+    }
+    startPomodoro();
+});
 pausePomodoroButton.addEventListener('click', pausePomodoro);
 resetPomodoroButton.addEventListener('click', resetPomodoro);
 focusTimeInput.addEventListener('change', loadPomodoroSettings);
 breakTimeInput.addEventListener('change', loadPomodoroSettings);
 
-
-// Projeto Listeners
 createNewProjectButton.addEventListener('click', createNewProject);
 viewCompletedProjectsButton.addEventListener('click', () => {
     renderCompletedProjects();
     completedProjectsModal.classList.add('active');
 });
 
-// Diário Listeners
 openDailyJournalButton.addEventListener('click', () => {
-    journalTitleInput.value = '';
-    journalEntryTextarea.value = '';
     renderJournalEntries();
     journalModal.classList.add('active');
 });
 saveJournalEntryButton.addEventListener('click', saveJournalEntry);
 
-// Fechar Modais (para todos os botões de fechar)
+
+resetDataButton.addEventListener('click', () => {
+    // Substituído confirm() por console.log ou modal customizado
+    console.log('Tem certeza que deseja REINICIAR TODOS OS DADOS do aplicativo? Esta ação é irreversível!');
+    // Se você quiser um modal de confirmação, precisará implementá-lo no HTML/CSS/JS
+    // Por agora, apenas reinicia diretamente para evitar bloqueio da UI
+    localStorage.removeItem('gamificationGameState');
+    location.reload(); // Recarrega a página para iniciar com um estado limpo
+});
+
+
+// Lógica para fechar modais genéricos
 closeButtons.forEach(button => {
     button.addEventListener('click', (event) => {
         event.target.closest('.modal').classList.remove('active');
     });
 });
 
-// Fechar modal ao clicar fora do conteúdo
+// Fechar modal ao clicar fora (opcional, mas bom para UX)
 window.addEventListener('click', (event) => {
     if (event.target === journalModal) {
         journalModal.classList.remove('active');
@@ -854,93 +816,28 @@ window.addEventListener('click', (event) => {
 });
 
 
-resetDataButton.addEventListener('click', () => {
-    if (confirm('Tem certeza que deseja reiniciar TODOS os dados? Esta ação é irreversível!')) {
-        pauseTimer();
-        pausePomodoro();
-
-        gameState = {
-            totalXP: 0,
-            lessonsCompleted: 0,
-            dailyDebugsCompleted: 0,
-            lastDebugDate: null,
-            exercisesCompleted: 0, // Mantido para total de todos os tempos
-            projectsCompleted: 0,
-            simulatedRevenue: 0,
-            totalFollowers: 0,
-            recentActivities: [],
-            activityHistory: [],
-            timerSeconds: 0,
-            pomodoro: {
-                isRunning: false,
-                isFocusMode: true,
-                remainingSeconds: 25 * 60,
-                focusDuration: 25 * 60,
-                breakDuration: 5 * 60
-            },
-            exercisesPerWeek: {},
-            activeProjects: [],
-            completedProjects: [],
-            journalEntries: [],
-            lessonEntries: [],
-            dailyDebugRewardsPaid: { // Resetar os contadores de pagamento diários
-                hasPaid30: false,
-                hasPaid50: false,
-                paid30Blocks: 0,
-                paid50Blocks: 0
-            }
-        };
-        saveGameState();
-        recalculateMetrics();
-        updateUI();
-        updateTimerDisplay();
-        updatePomodoroDisplay();
-        alert('Todos os dados foram reiniciados com sucesso!');
-    }
-});
-
 // ===============================================
-// 8. Inicialização (Quando a página carrega)
+// 9. Inicialização do Aplicativo
 // ===============================================
 
 document.addEventListener('DOMContentLoaded', () => {
+    adjustMainContentMargin();
+    window.addEventListener('resize', adjustMainContentMargin); // Ajusta a margem em caso de redimensionamento da janela
+
     loadGameState();
-    // Verifica e reseta os debugs diários assim que o jogo é carregado,
-    // garantindo que, se o usuário não fizer debugs por um dia, o contador zere.
     checkAndResetDailyDebugs();
-    recalculateMetrics();
     updateUI();
     updateTimerDisplay();
     updatePomodoroDisplay();
 
-    adjustMainContentMargin();
-    window.addEventListener('resize', adjustMainContentMargin);
-
-    const resizeObserver = new ResizeObserver(entries => {
-        for (let entry of entries) {
-            if (entry.target === headerElement) {
-                adjustMainContentMargin();
-            }
-        }
-    });
-
-    if (headerElement) {
-        resizeObserver.observe(headerElement);
+    // Se o cronômetro estava rodando, reinicia o intervalo
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        startTimer();
+    }
+    // Se o pomodoro estava rodando, reinicia o intervalo
+    if (gameState.pomodoro.isRunning) {
+        gameState.pomodoro.isRunning = false;
+        startPomodoro();
     }
 });
-
-// ===============================================
-// 9. Configuração PWA (Service Worker e Manifest) - SEM ALTERAÇÕES AQUI
-// ===============================================
-
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-            .then(registration => {
-                console.log('Service Worker registrado com sucesso:', registration);
-            })
-            .catch(error => {
-                console.log('Falha no registro do Service Worker:', error);
-            });
-    });
-}

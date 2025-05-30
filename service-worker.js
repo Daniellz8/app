@@ -1,74 +1,72 @@
-const CACHE_NAME = 'gamification-dev-cache-v4'; // Mudei de v3 para v4
+const CACHE_NAME = 'gamificacao-dev-cache-v2'; // Alterado para v2 para garantir que o cache antigo seja limpo
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/style.css',
-    '/script.js',
-    '/manifest.json',
-    '/icons/icon-192x192.png',
-    '/icons/icon-512x512.png',
-    // Adicione outros assets se houver, como um som para o pomodoro
-    '/notification.mp3' // Exemplo: se você adicionar um som de notificação
+    // Arquivos essenciais para o funcionamento offline
+    '/', // Representa o index.html na raiz do escopo do service worker
+    'index.html',
+    'style.css',
+    'script.js',
+    'manifest.json',
+    // Ícones (verifique se você tem esses arquivos na sua pasta 'icons')
+    'icons/apple-touch-icon.png',
+    'icons/favicon-32x32.png',
+    'icons/favicon-16x16.png',
+    'icons/favicon.ico',
+    'icons/icon-72x72.png',
+    'icons/icon-96x96.png',
+    'icons/icon-128x128.png',
+    'icons/icon-144x144.png',
+    'icons/icon-152x152.png',
+    'icons/icon-192x192.png',
+    'icons/icon-384x384.png',
+    'icons/icon-512x512.png'
+    // Adicione outras fontes, imagens, etc., se forem importantes para o offline
+    // Exemplo: 'https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap', // Se você quiser cachear a fonte do Google Fonts
 ];
 
-// Instalação do Service Worker: cacheia todos os assets necessários
-self.addEventListener('install', event => {
+self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('Opened cache');
+            .then((cache) => {
+                console.log('Service Worker: Cache aberto durante a instalação.');
                 return cache.addAll(urlsToCache);
+            })
+            .catch(error => {
+                console.error('Service Worker: Falha ao adicionar URLs ao cache durante a instalação:', error);
             })
     );
 });
 
-// Ativação do Service Worker: limpa caches antigos
-self.addEventListener('activate', event => {
+self.addEventListener('fetch', (event) => {
+    event.respondWith(
+        caches.match(event.request)
+            .then((response) => {
+                if (response) {
+                    console.log('Service Worker: Servindo do cache:', event.request.url);
+                    return response;
+                }
+                console.log('Service Worker: Buscando da rede:', event.request.url);
+                return fetch(event.request);
+            })
+            .catch(error => {
+                console.error('Service Worker: Erro durante o fetch:', error);
+                // Opcional: Retornar uma página offline se o fetch falhar
+                // return caches.match('/offline.html'); 
+            })
+    );
+});
+
+self.addEventListener('activate', (event) => {
+    const cacheWhitelist = [CACHE_NAME];
     event.waitUntil(
-        caches.keys().then(cacheNames => {
+        caches.keys().then((cacheNames) => {
             return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('Deleting old cache:', cacheName);
+                cacheNames.map((cacheName) => {
+                    if (cacheWhitelist.indexOf(cacheName) === -1) {
+                        console.log('Service Worker: Deletando cache antigo:', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
             );
         })
-    );
-});
-
-// Fetch do Service Worker: serve assets do cache ou da rede
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                // Cache hit - return response
-                if (response) {
-                    return response;
-                }
-                // No cache - fetch from network
-                return fetch(event.request).then(
-                    function (response) {
-                        // Check if we received a valid response
-                        if (!response || response.status !== 200 || response.type !== 'basic') {
-                            return response;
-                        }
-
-                        // IMPORTANT: Clone the response. A response is a stream
-                        // and can only be consumed once. We must clone it so that
-                        // the browser can consume the original response and we can
-                        // consume the clone.
-                        var responseToCache = response.clone();
-
-                        caches.open(CACHE_NAME)
-                            .then(function (cache) {
-                                cache.put(event.request, responseToCache);
-                            });
-
-                        return response;
-                    }
-                );
-            })
     );
 });
