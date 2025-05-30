@@ -1020,3 +1020,17 @@ document.addEventListener('DOMContentLoaded', () => {
         updatePomodoroDisplay();
     }
 });
+function adjustMainContentMargin() {
+    const header = document.querySelector('header.fixed-dashboard');
+    const mainContent = document.querySelector('main.content-below-dashboard');
+    if (header && mainContent) {
+        const headerHeight = header.offsetHeight; // Obtém a altura renderizada do cabeçalho
+        // Adiciona um pouco de padding extra para garantir
+        const extraPadding = 20; // Ajuste conforme necessário
+        mainContent.style.paddingTop = `${headerHeight + extraPadding}px`;
+    }
+}
+
+// Chame esta função na inicialização do jogo e ao redimensionar a janela
+document.addEventListener('DOMContentLoaded', adjustMainContentMargin);
+window.addEventListener('resize', adjustMainContentMargin);
