@@ -20,9 +20,6 @@
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function () {
-                // O caminho aqui é relativo ao root do seu site no GitHub Pages (ex: /GamificacaoPessoal/service-worker.js)
-                // O escopo do Service Worker deve ser ajustado para o nome do repositório no service-worker.js
-                // O registro do Service Worker agora usará o caminho correto.
                 navigator.serviceWorker.register('service-worker.js')
                     .then(reg => console.log('Service Worker Registrado!', reg))
                     .catch(err => console.log('Erro ao registrar Service Worker:', err));
@@ -159,6 +156,13 @@
             <h3>Histórico Completo de Atividades</h3>
             <ul id="activityHistoryList" class="activity-history-scroll-area">
             </ul>
+        </section>
+
+        <section class="development-history metrics-card">
+            <h3>Nossa Jornada de Desenvolvimento</h3>
+            <ul id="developmentHistoryList" class="history-list">
+            </ul>
+            <p class="history-tip">Cada linha é um passo em direção ao nosso sucesso em equipe!</p>
         </section>
 
         <section class="reset-data-section">

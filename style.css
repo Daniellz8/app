@@ -24,7 +24,7 @@ body {
     line-height: 1.6;
 }
 
-/* Header Fixo (Dashboard) */
+/* --- Header Fixo (Dashboard) - REVISADO --- */
 header.fixed-dashboard {
     position: fixed;
     top: 0;
@@ -33,46 +33,57 @@ header.fixed-dashboard {
     background-color: var(--card-background);
     box-shadow: 0 2px 5px var(--shadow-color);
     z-index: 1000;
-    padding: 15px 20px;
+    padding: 10px 0;
+    box-sizing: border-box;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    border-bottom: 1px solid var(--border-color);
-    flex-wrap: wrap;
-    gap: 20px;
+    flex-direction: column;
+    /* Padrão mobile: blocos em coluna */
+    align-items: center;
+    /* Centraliza os blocos */
+    gap: 15px;
+    /* Espaçamento entre .dashboard-metrics, .activity-log, .motivational-phrase-log */
 }
 
 .dashboard-metrics {
     display: flex;
     flex-wrap: wrap;
-    gap: 15px 30px;
-    flex-grow: 1;
-    justify-content: flex-start;
+    justify-content: center;
+    /* Centraliza as métricas em mobile */
+    gap: 8px 15px;
+    /* Espaçamento entre métricas */
+    width: 95%;
+    /* Ocupa a maior parte da largura */
+    padding: 5px 0;
 }
 
 .metric-item {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    /* Centraliza texto da métrica */
+    flex: 1 1 calc(33% - 10px);
+    /* Tenta 3 colunas em mobile */
+    min-width: 90px;
+    padding: 5px 2px;
 }
 
 .metric-label {
-    font-size: 0.85em;
+    font-size: 0.75em;
     color: #6c757d;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
+    text-align: center;
 }
 
 .metric-value {
-    font-size: 1.3em;
+    font-size: 1.1em;
     font-weight: 700;
     color: var(--primary-color);
 }
 
 .metric-item.star-rating .metric-value {
-    font-size: 1.5em;
-    color: gold;
+    font-size: 1.3em;
     display: flex;
-    gap: 2px;
+    gap: 1px;
 }
 
 .star {
@@ -83,20 +94,24 @@ header.fixed-dashboard {
     color: gold;
 }
 
-.activity-log {
+/* Logs de Atividade e Frase Motivacional */
+.activity-log,
+.motivational-phrase-log {
     background-color: #f2f2f2;
     padding: 10px 15px;
     border-radius: 8px;
     box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
-    flex-shrink: 0;
-    max-width: 300px;
-    min-width: 250px;
+    width: 95%;
+    /* Ocupa a maior parte da largura em mobile */
+    box-sizing: border-box;
     height: fit-content;
+    text-align: center;
 }
 
-.activity-log h3 {
+.activity-log h3,
+.motivational-phrase-log h3 {
     margin-top: 0;
-    font-size: 1em;
+    font-size: 0.95em;
     color: #495057;
     border-bottom: 1px solid #dee2e6;
     padding-bottom: 5px;
@@ -107,15 +122,20 @@ header.fixed-dashboard {
     list-style: none;
     padding: 0;
     margin: 0;
-    font-size: 0.8em;
+    font-size: 0.75em;
     color: #555;
-    max-height: 120px;
+    max-height: 60px;
+    /* Limita altura para mobile */
     overflow-y: auto;
+    text-align: left;
 }
 
 .activity-log ul li {
-    padding: 5px 0;
+    padding: 3px 0;
     border-bottom: 1px dashed #e9ecef;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .activity-log ul li:last-child {
@@ -127,13 +147,27 @@ header.fixed-dashboard {
     color: var(--primary-color);
 }
 
+.motivational-phrase {
+    font-size: 0.85em;
+    font-style: italic;
+    color: #555;
+    margin-top: 5px;
+}
 
-/* Conteúdo Principal */
+/* Conteúdo Principal (Ajuste de Margem Superior) */
 main.content-below-dashboard {
     padding: 20px;
+    /* Adiciona um padding-top para o conteúdo rolar abaixo da dashboard fixa */
+    /* Este valor é aproximado, você pode precisar ajustá-lo ou calcular via JS */
+    padding-top: 280px;
+    /* Ajuste baseado na altura provável da dashboard em mobile */
     margin-top: 0;
-    /* Será ajustado via JavaScript */
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    /* Padrão mobile: empilha as seções */
+    gap: 25px;
+    /* Espaçamento entre as seções */
 }
 
 section {
@@ -141,7 +175,6 @@ section {
     border-radius: 10px;
     box-shadow: 0 4px 10px var(--shadow-color);
     padding: 25px;
-    margin-bottom: 25px;
     border: 1px solid var(--border-color);
 }
 
@@ -154,6 +187,7 @@ section h3 {
     margin-bottom: 20px;
 }
 
+/* Botões de Ação */
 .action-buttons-container {
     display: flex;
     flex-wrap: wrap;
@@ -171,6 +205,7 @@ section h3 {
     transition: background-color 0.3s ease, transform 0.2s ease;
     flex-grow: 1;
     min-width: 200px;
+    max-width: 300px;
 }
 
 .primary-button {
@@ -203,21 +238,17 @@ section h3 {
     transform: translateY(-2px);
 }
 
-/* Timer Section (General - now for both timers) */
+/* Timer Section */
 .timers-section {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-around;
+    justify-content: center;
     gap: 20px;
-    /* Espaço entre os dois blocos de timer */
 }
 
 .timer-study,
 .timer-pomodoro {
-    flex: 1;
-    /* Permite que os timers ocupem espaço igual */
-    min-width: 280px;
-    /* Largura mínima para cada timer */
+    flex: 1 1 300px;
     text-align: center;
     background-color: #f7f7f7;
     border-radius: 8px;
@@ -257,7 +288,6 @@ section h3 {
     gap: 10px;
     flex-wrap: wrap;
     margin-bottom: 15px;
-    /* Espaço entre controles e config */
 }
 
 .control-button {
@@ -273,10 +303,8 @@ section h3 {
     background-color: #e2e6ea;
 }
 
-/* Pomodoro specific styles */
 .pomodoro-controls .primary-button {
     background-color: var(--primary-color);
-    /* Usar primary para iniciar foco */
     color: white;
     border-color: var(--primary-color);
 }
@@ -515,7 +543,6 @@ section h3 {
     max-width: 600px;
     position: relative;
     display: flex;
-    /* Para flex-direction column */
     flex-direction: column;
 }
 
@@ -556,7 +583,6 @@ section h3 {
 .modal-content input[type="text"],
 .modal-content textarea {
     width: calc(100% - 22px);
-    /* Ajusta para padding e borda */
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -564,7 +590,6 @@ section h3 {
     font-size: 1em;
     resize: vertical;
     margin-bottom: 10px;
-    /* Espaço entre campos */
 }
 
 .modal-content textarea {
@@ -574,7 +599,6 @@ section h3 {
 .modal-content button.primary-button {
     margin-top: 20px;
     align-self: flex-end;
-    /* Alinha o botão à direita no modal */
     padding: 10px 20px;
 }
 
@@ -664,8 +688,12 @@ section h3 {
 }
 
 
-/* Responsividade */
-@media (max-width: 768px) {
+/* --- MEDIA QUERIES PARA RESPONSIVIDADE --- */
+
+/* Padrão para Mobile (0px a 767px) - Seu código atual + refinamentos */
+@media (max-width: 767px) {
+
+    /* Ajustei de 768px para 767px para evitar sobreposição */
     header.fixed-dashboard {
         flex-direction: column;
         align-items: center;
@@ -675,21 +703,56 @@ section h3 {
 
     .dashboard-metrics {
         justify-content: center;
-        gap: 10px 20px;
+        gap: 10px 15px;
+        /* Espaçamento ajustado */
+        width: 100%;
+        /* Ocupa a largura total para as métricas */
     }
 
     .metric-item {
+        flex: 1 1 calc(33.33% - 10px);
+        /* Garante que 3 itens por linha tentem caber */
+        max-width: calc(33.33% - 10px);
+        /* Impede que estiquem demais */
         align-items: center;
+        min-width: 80px;
+        /* Reduz um pouco o min-width se necessário */
     }
 
-    .activity-log {
-        max-width: 100%;
-        min-width: unset;
-        width: 100%;
+    .metric-label {
+        font-size: 0.7em;
+        /* Fonte ainda menor em mobile */
     }
 
-    .action-button,
-    .control-button {
+    .metric-value {
+        font-size: 1em;
+        /* Fonte menor em mobile */
+    }
+
+    .metric-item.star-rating .metric-value {
+        font-size: 1.1em;
+    }
+
+    .activity-log,
+    .motivational-phrase-log {
+        width: calc(100% - 20px);
+        /* Ajusta a largura para o padding do header */
+        margin: 0 10px;
+        /* Margem lateral */
+        box-sizing: border-box;
+    }
+
+    /* Padding superior para o main content */
+    main.content-below-dashboard {
+        padding-top: 300px;
+        /* Um valor mais seguro para a altura da dashboard em mobile */
+        padding-left: 15px;
+        /* Ajusta padding lateral */
+        padding-right: 15px;
+        /* Ajusta padding lateral */
+    }
+
+    .action-button {
         width: 100%;
         flex-grow: unset;
         min-width: unset;
@@ -716,4 +779,290 @@ section h3 {
     .timers-section {
         flex-direction: column;
     }
+}
+
+
+/* Tablets (768px a 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    header.fixed-dashboard {
+        flex-direction: row;
+        /* Blocos em linha */
+        justify-content: space-around;
+        /* Distribui os blocos */
+        align-items: flex-start;
+        /* Alinha no topo */
+        padding: 15px 20px;
+        flex-wrap: wrap;
+        /* Permite quebrar se não houver espaço */
+        height: auto;
+        /* Altura se ajusta ao conteúdo */
+    }
+
+    .dashboard-metrics {
+        flex: 2;
+        /* Métricas ocupam mais espaço */
+        justify-content: flex-start;
+        /* Alinha métricas à esquerda */
+        gap: 15px 25px;
+        /* Mais espaço entre as métricas */
+        width: auto;
+        /* Reseta largura para flex */
+        padding: 0;
+    }
+
+    .metric-item {
+        align-items: flex-start;
+        /* Alinha texto da métrica à esquerda */
+        flex: none;
+        /* Não cresce/encolhe com flex */
+        width: auto;
+        /* Largura automática */
+        min-width: unset;
+    }
+
+    .metric-label {
+        font-size: 0.85em;
+        /* Volta ao tamanho normal */
+    }
+
+    .metric-value {
+        font-size: 1.3em;
+        /* Volta ao tamanho normal */
+    }
+
+    .metric-item.star-rating .metric-value {
+        font-size: 1.5em;
+    }
+
+    .activity-log,
+    .motivational-phrase-log {
+        flex: 1;
+        /* Ocupa espaço igual, podendo ficar ao lado */
+        min-width: 280px;
+        /* Garante largura mínima para os logs */
+        margin: 0;
+        /* Remove margem extra */
+        text-align: left;
+        /* Alinha o texto do título do log à esquerda */
+    }
+
+    .activity-log ul {
+        max-height: 100px;
+        /* Aumenta a altura para logs em tablets */
+        font-size: 0.8em;
+    }
+
+    main.content-below-dashboard {
+        padding-top: calc(15px + 100px + 20px);
+        /* Ajusta padding top para dashboard do tablet */
+        flex-direction: row;
+        /* Seções em linha */
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        /* Alinha seções à esquerda */
+        gap: 20px;
+        /* Espaçamento entre os cards */
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .action-buttons-container {
+        flex-direction: row;
+        /* Botões lado a lado */
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .action-button {
+        flex: 1;
+        /* Distribui o espaço entre os botões */
+        max-width: none;
+        /* Remove max-width */
+    }
+
+    .metrics-card {
+        flex: 1 1 calc(50% - 20px);
+        /* 2 colunas para a maioria dos cards */
+        margin-bottom: 0;
+        /* O gap do main já cuida do espaçamento */
+    }
+
+    .timers-section {
+        flex-direction: row;
+        /* Timers lado a lado */
+        flex: 1 1 100%;
+        /* Timers ocupam a linha inteira */
+    }
+
+    .create-project {
+        flex-direction: row;
+        /* Input e botão lado a lado */
+        align-items: center;
+    }
+
+    .create-project input {
+        flex: 1;
+    }
+
+    .create-project button {
+        width: auto;
+        flex-shrink: 0;
+        /* Não encolhe */
+    }
+
+    .active-projects-list {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        /* Mais compacto para tablets */
+    }
+
+    .modal-content {
+        width: 70%;
+        max-width: 700px;
+    }
+}
+
+/* Desktops (min-width: 1024px) */
+@media (min-width: 1024px) {
+    header.fixed-dashboard {
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: flex-start;
+        padding: 20px 30px;
+    }
+
+    .dashboard-metrics {
+        flex: 3;
+        /* Métricas ocupam mais espaço */
+        gap: 20px 40px;
+        /* Mais espaço entre as métricas */
+    }
+
+    .metric-item {
+        align-items: flex-start;
+    }
+
+    .activity-log,
+    .motivational-phrase-log {
+        flex: 1;
+        /* Ocupa menos espaço, mas mantém ao lado */
+        min-width: 250px;
+        /* Largura mínima para logs em desktop */
+        margin: 0;
+        text-align: left;
+    }
+
+    .activity-log ul {
+        max-height: 120px;
+        /* Altura maior para logs em desktop */
+        font-size: 0.9em;
+    }
+
+    main.content-below-dashboard {
+        padding-top: calc(20px + 100px + 30px);
+        /* Ajusta padding top para dashboard do desktop */
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        /* Centraliza as seções em desktop */
+        gap: 30px;
+        /* Espaçamento maior entre os cards */
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    .action-buttons-container {
+        justify-content: center;
+        /* Centraliza os botões */
+    }
+
+    .action-button {
+        flex: none;
+        /* Não cresce */
+        width: 250px;
+        /* Largura fixa para botões em desktop */
+    }
+
+    .metrics-card {
+        flex: 1 1 calc(33.33% - 30px);
+        /* 3 colunas para a maioria dos cards */
+    }
+
+    .timers-section,
+    .project-management,
+    /* Estes podem ir em 1 coluna ou 2 */
+    .full-activity-history,
+    .development-history
+
+    /* Novas seções podem ser 1, 2 ou 3 colunas */
+        {
+        flex: 1 1 calc(50% - 30px);
+        /* Exemplo: 2 colunas para essas seções em desktop */
+    }
+
+    /* Se você quiser 3 colunas para tudo, exceto botões/timers: */
+    /* .metrics-card { flex: 1 1 calc(33.33% - 30px); } */
+    /* .timers-section { flex: 1 1 calc(66.66% - 30px); } ou 100% para linha inteira */
+    /* .action-buttons-container { flex: 1 1 100%; } */
+
+
+    .active-projects-list {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        /* 2 ou 3 colunas de projetos */
+    }
+
+    .modal-content {
+        width: 60%;
+        max-width: 800px;
+    }
+}
+
+/* Estilos para a nova seção de História */
+.development-history {
+    background-color: #e0f2f7;
+    border-left: 5px solid #2980b9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.development-history h3 {
+    color: #2980b9;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 1.2em;
+    border-bottom: 1px solid #cceeff;
+    /* Borda mais suave */
+    padding-bottom: 10px;
+}
+
+.history-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.95em;
+    color: #333;
+}
+
+.history-list li {
+    margin-bottom: 10px;
+    padding-left: 25px;
+    position: relative;
+    line-height: 1.4;
+}
+
+.history-list li::before {
+    content: '🚀';
+    position: absolute;
+    left: 0;
+    top: 0;
+    font-size: 1.1em;
+}
+
+.history-tip {
+    font-style: italic;
+    text-align: center;
+    margin-top: 15px;
+    color: #555;
+    font-size: 0.85em;
 }
