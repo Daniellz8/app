@@ -11,21 +11,42 @@ const REVENUE_PER_PROJECT = 300;
 const EXERCISE_REVENUE_PER_30_DEBUG = 30; // Corrigido para 30 (era 50)
 const EXERCISE_REVENUE_PER_50_DEBUG = 50; // Corrigido para 50 (era 150)
 const MONTHLY_COST = 600;
-const REAL_REWARD_CONVERSION_FACTOR = 0.2; // 200/1000 = 0.2
+const REAL_REWARD_CONVERSION_FACTOR = 0.2; // 200/1000 = 0.2 -> 20% da receita líquida.
 const FOLLOWERS_FOR_10_STARS = 3086; // Meta para 10 estrelas
 
 // Frases motivacionais (Novidade!)
 const MOTIVATIONAL_PHRASES = [
+    "Acredite no seu potencial. Ele é ilimitado.",
+    "Pequenos passos todos os dias levam a grandes conquistas.",
+    "Seu esforço de hoje é o sucesso de amanhã.",
+    "Não desista. O melhor ainda está por vir.",
+    "A mudança começa em você.",
+    "Transforme desafios em oportunidades.",
+    "Inspire-se, mas seja a sua própria motivação.",
+    "Cada novo dia é uma nova chance de recomeçar.",
     "A persistência realiza o impossível.",
-    "O sucesso é a soma de pequenos esforços repetidos dia após dia.",
-    "Não espere por oportunidades, crie-as.",
-    "Acredite em você e tudo será possível.",
-    "O único lugar onde o sucesso vem antes do trabalho é no dicionário.",
-    "Transforme seus limites em novas possibilidades.",
-    "O futuro pertence àqueles que acreditam na beleza de seus sonhos.",
-    "Seja a mudança que você deseja ver no mundo da programação.",
-    "Pequenos passos todos os dias levam a grandes resultados.",
-    "Codifique hoje o futuro que você quer viver amanhã."
+    "Você é mais forte do que pensa.",
+    "Celebre cada pequena vitória.",
+    "Siga em frente, mesmo que devagar.",
+    "O sucesso é a soma de pequenos esforços repetidos.",
+    "Nunca é tarde para ser quem você realmente quer ser.",
+    "Seu único limite é você mesmo.",
+    "Aprenda com o passado, viva o presente, sonhe com o futuro.",
+    "Faça o que for preciso, mas nunca pare de sonhar.",
+    "A vida é uma jornada, não um destino.",
+    "Quebre suas barreiras. Supere-se!",
+    "Acredite que você pode, e você estará no meio do caminho.",
+    "Dê o seu melhor e deixe o resto acontecer.",
+    "A força não vem da capacidade física, mas de uma vontade indomável.",
+    "Seja a energia que você quer atrair.",
+    "Sua atitude determina sua direção.",
+    "Conquiste seus medos e liberte seu potencial.",
+    "O caminho para o sucesso está sempre em construção.",
+    "Respire fundo e siga em frente. Você consegue!",
+    "A sua coragem é maior que o seu medo.",
+    "Faça de cada dia uma obra-prima.",
+    "Onde há vontade, há um caminho.",
+    "Comece de onde você está. Use o que você tem. Faça o que você pode."
 ];
 
 // Estado inicial do jogo (valores padrão)
@@ -34,7 +55,7 @@ let gameState = {
     lessonsCompleted: 0,
     dailyDebugsCompleted: 0, // Debugs feitos no dia atual
     lastDebugDate: null,      // Data do último debug registrado (para reset diário)
-    exercisesCompleted: 0, // Contador total de debugs de todos os tempos
+    exercisesCompleted: 0, // Contador total de debugs de todos os tempos (não foi modificado, mantido como antes)
     projectsCompleted: 0,
     simulatedRevenue: 0, // Receita total simulada (acumulativa)
     totalFollowers: 0,
@@ -76,7 +97,7 @@ const starRatingElement = document.getElementById('starRating');
 const simulatedRevenueElement = document.getElementById('simulatedRevenue');
 const realRewardElement = document.getElementById('realReward');
 const monthlyCostElement = document.getElementById('monthlyCost');
-const exercisesCompletedCountElement = document.getElementById('exercisesCompletedCount'); // Este agora mostrará os debugs diários
+const exercisesCompletedCountElement = document.getElementById('exercisesCompletedCount');
 
 const activityListElement = document.getElementById('activityList');
 const activityHistoryListElement = document.getElementById('activityHistoryList');
@@ -121,20 +142,8 @@ const saveJournalEntryButton = document.getElementById('saveJournalEntry');
 const journalEntriesList = document.getElementById('journalEntriesList');
 const completedProjectsList = document.getElementById('completedProjectsList');
 
-// NOVO: Elemento para a seção de frases motivacionais
-const motivationalPhraseSection = document.createElement('section');
-motivationalPhraseSection.classList.add('metrics-card', 'motivational-phrase-section'); // Adicionei 'metrics-card' para manter o estilo
-motivationalPhraseSection.innerHTML = `
-    <h3>Inspiração Diária</h3>
-    <p id="dailyMotivationalPhrase" class="motivational-phrase"></p>
-`;
-// Encontre onde inserir esta seção. Ex: após action-buttons-container ou timers-section
-// Vou inserir após timers-section para seguir a estrutura de 'sections'
-const timersSection = document.querySelector('.timers-section');
-timersSection.parentNode.insertBefore(motivationalPhraseSection, timersSection.nextSibling);
-
+// NOVO: Elemento para a seção de frases motivacionais (já está no HTML, apenas obtenha a referência)
 const dailyMotivationalPhraseElement = document.getElementById('dailyMotivationalPhrase');
-
 
 // ===============================================
 // 3. Funções de Lógica do Jogo
@@ -170,7 +179,6 @@ function checkAndResetDailyDebugs() {
         gameState.dailyDebugsCompleted = 0;
         gameState.dailyDebugRewardsPaid = { hasPaid30: false, hasPaid50: false };
         gameState.lastDebugDate = today.toISOString(); // Atualiza a data do último debug
-        // addActivityToList('Sistema', 'Contador de debugs diários resetado.', { systemMessage: true }); // Não adiciona mais no log, pois é um comportamento interno
         saveGameState(); // Salva o estado após o reset
     }
 }
@@ -274,6 +282,7 @@ function updateMotivationalPhrase() {
         gameState.lastMotivationalPhraseDate = today.toISOString();
         saveGameState();
     }
+    // Garante que o elemento seja atualizado mesmo que a frase não mude (ex: ao recarregar a página no mesmo dia)
     dailyMotivationalPhraseElement.textContent = gameState.currentMotivationalPhrase;
 }
 
@@ -430,8 +439,12 @@ function updateUI() {
     updateStarRatingDisplay();
     simulatedRevenueElement.textContent = `R$ ${gameState.simulatedRevenue.toFixed(2).replace('.', ',')}`;
 
+    // === LÓGICA DE CÁLCULO DA RECOMPENSA REAL ===
+    // Se a receita simulada for menor que o custo mensal, a receita líquida é 0.
     const netSimulatedRevenue = Math.max(0, gameState.simulatedRevenue - MONTHLY_COST);
+    // A recompensa real é uma porcentagem da receita líquida.
     realRewardElement.textContent = `R$ ${(netSimulatedRevenue * REAL_REWARD_CONVERSION_FACTOR).toFixed(2).replace('.', ',')}`;
+    // ===========================================
 
     monthlyCostElement.textContent = `R$ ${MONTHLY_COST.toFixed(2).replace('.', ',')}`;
     exercisesCompletedCountElement.textContent = gameState.dailyDebugsCompleted; // Mostra debugs diários aqui
@@ -465,8 +478,11 @@ function addActivityToList(type, detail, extraData = {}) {
     gameState.activityHistory.unshift(activity);
 
     // Atualiza atividades recentes
+    // Filtra atividades que não são resumos diários para a lista de "Atividade Recente"
+    // e pega as 5 mais recentes
     const MAX_RECENT_ACTIVITIES_DISPLAY = 5;
     gameState.recentActivities = gameState.activityHistory.filter(act => !act.dailySummary).slice(0, MAX_RECENT_ACTIVITIES_DISPLAY);
+
 
     updateRecentActivityList();
     updateActivityHistoryList();
@@ -731,253 +747,230 @@ function renderActiveProjects() {
                 addActivityToList('Projeto Concluído', `"${project.name}" concluído! Recebeu R$${REVENUE_PER_PROJECT.toFixed(2).replace('.', ',')}`);
 
                 gameState.completedProjects.push(project);
-                gameState.activeProjects = gameState.activeProjects.filter(p => p.id !== projectId);
-                updateUI();
+                gameState.activeProjects = gameState.activeProjects.filter(p => p.id !== projectId); // Remove dos ativos
+
             } else if (action === 'archive') {
-                console.log(`Tem certeza que deseja arquivar o projeto "${project.name}"? Ele será removido da lista de ativos.`);
-                gameState.activeProjects = gameState.activeProjects.filter(p => p.id !== projectId);
-                addActivityToList('Projeto Arquivado', `"${project.name}" foi arquivado (removido da lista de ativos).`);
+                // Ao arquivar, move diretamente para completedProjects como "Arquivado"
+                project.status = 'Arquivado';
+                addActivityToList('Projeto Arquivado', `"${project.name}" foi arquivado.`);
+                gameState.completedProjects.push(project);
+                gameState.activeProjects = gameState.activeProjects.filter(p => p.id !== projectId); // Remove dos ativos
             }
             saveGameState();
-            renderActiveProjects();
+            updateUI(); // Atualiza a interface
         });
     });
 }
 
+
 function renderCompletedProjects() {
     completedProjectsList.innerHTML = '';
     if (gameState.completedProjects.length === 0) {
-        completedProjectsList.innerHTML = '<li>Nenhum projeto concluído ainda.</li>';
+        completedProjectsList.innerHTML = '<p>Nenhum projeto concluído ou arquivado.</p>';
         return;
     }
-    const sortedCompletedProjects = [...gameState.completedProjects].sort((a, b) => new Date(b.lastUpdate) - new Date(a.lastUpdate));
-
-    sortedCompletedProjects.forEach(project => {
+    gameState.completedProjects.forEach(project => {
         const listItem = document.createElement('li');
-        listItem.innerHTML = `${project.name}<span>Concluído em: ${project.lastUpdate}</span>`;
+        listItem.textContent = `${project.name} (Status: ${project.status}) - Concluído em: ${project.lastUpdate}`;
         completedProjectsList.appendChild(listItem);
     });
 }
 
-
 // ===============================================
-// 5. Lógica do Diário
+// 5. Funções do Diário de Bordo
 // ===============================================
-
-function saveJournalEntry() {
-    const title = journalTitleInput.value.trim();
-    const entryText = journalEntryTextarea.value.trim();
-
-    if (!title) {
-        console.log('Por favor, digite um título para a entrada do diário.');
-        return;
-    }
-    if (!entryText) {
-        console.log('Por favor, escreva algo para salvar no diário.');
-        return;
-    }
-
-    const now = new Date();
-    const dateString = now.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
-    const timeString = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
-    const newEntry = {
-        title: title,
-        date: dateString,
-        time: timeString,
-        text: entryText
-    };
-    gameState.journalEntries.unshift(newEntry);
-    journalTitleInput.value = '';
-    journalEntryTextarea.value = '';
-    saveGameState();
-    renderJournalEntries();
-    addActivityToList('Diário', `Nova entrada: "${title}"`, { journalTitle: title });
-}
 
 function renderJournalEntries() {
     journalEntriesList.innerHTML = '';
     if (gameState.journalEntries.length === 0) {
-        journalEntriesList.innerHTML = '<li>Nenhuma entrada no diário ainda.</li>';
+        journalEntriesList.innerHTML = '<p>Nenhuma entrada no diário ainda.</p>';
         return;
     }
-    gameState.journalEntries.forEach(entry => {
+    // Ordenar as entradas do diário pela data mais recente primeiro
+    const sortedEntries = [...gameState.journalEntries].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    sortedEntries.forEach(entry => {
         const listItem = document.createElement('li');
-        listItem.innerHTML = `<strong>${entry.title} (${entry.date} às ${entry.time}):</strong> ${entry.text}`;
+        listItem.innerHTML = `
+            <strong>${entry.title}</strong>
+            <span class="journal-date">${new Date(entry.date).toLocaleDateString('pt-BR')} ${new Date(entry.date).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+            <p>${entry.entry}</p>
+            <button class="delete-journal-entry" data-id="${entry.id}">Excluir</button>
+        `;
         journalEntriesList.appendChild(listItem);
     });
-}
 
-// ===============================================
-// 6. Lógica do Modal de Aulas Teóricas
-// ===============================================
-
-function saveLessonDetailsAndComplete() {
-    const title = lessonTitleInput.value.trim();
-    const notes = lessonNotesTextarea.value.trim();
-
-    if (!title) {
-        console.log('Por favor, digite um título para a aula.');
-        return;
-    }
-
-    gameState.lessonsCompleted++;
-    recalculateMetrics();
-
-    addActivityToList(
-        'Aula',
-        `Aula: "${title}"`,
-        { lessonTitle: title, lessonNotes: notes }
-    );
-
-    gameState.lessonEntries.unshift({
-        title: title,
-        notes: notes,
-        date: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })
+    // Adicionar event listeners para os botões de exclusão
+    document.querySelectorAll('.delete-journal-entry').forEach(button => {
+        button.addEventListener('click', (event) => {
+            const entryIdToDelete = parseInt(event.target.dataset.id);
+            gameState.journalEntries = gameState.journalEntries.filter(entry => entry.id !== entryIdToDelete);
+            saveGameState();
+            renderJournalEntries(); // Atualiza a lista no modal
+            updateUI(); // Atualiza outras partes da UI se necessário
+        });
     });
-
-    saveGameState();
-    updateUI();
-    lessonModal.classList.remove('active');
-    lessonTitleInput.value = '';
-    lessonNotesTextarea.value = '';
 }
 
-
 // ===============================================
-// 7. Funções de Manipulação de Eventos (Botões)
+// 6. Funções de Eventos
 // ===============================================
 
 addLessonButton.addEventListener('click', () => {
-    lessonModal.classList.add('active');
+    lessonModal.style.display = 'block';
+    lessonTitleInput.value = ''; // Limpa campos
+    lessonNotesTextarea.value = '';
 });
 
-saveLessonDetailsButton.addEventListener('click', saveLessonDetailsAndComplete);
+saveLessonDetailsButton.addEventListener('click', () => {
+    const lessonTitle = lessonTitleInput.value.trim();
+    const lessonNotes = lessonNotesTextarea.value.trim();
 
+    gameState.lessonsCompleted++;
+    recalculateMetrics(); // Recalcula XP e seguidores
 
-// Lógica para o único botão de "Resolver Debug" com recompensas diárias
+    const activityDetail = `Concluiu uma aula teórica. ${lessonTitle ? `Título: "${lessonTitle}"` : ''}`;
+    addActivityToList('Aula', activityDetail, { lessonTitle, lessonNotes });
+    gameState.lessonEntries.push({ id: Date.now(), title: lessonTitle, notes: lessonNotes, date: new Date().toISOString() });
+
+    saveGameState();
+    updateUI();
+    lessonModal.style.display = 'none';
+});
+
 resolveDebugButton.addEventListener('click', () => {
-    // 1. Primeiro, verifica e reseta o contador diário se for um novo dia.
-    checkAndResetDailyDebugs();
-
-    // 2. Incrementa o contador de debugs diários e o contador total (se ainda usar).
     gameState.dailyDebugsCompleted++;
-    gameState.exercisesCompleted++; // Contador total de todos os tempos, se necessário
+    gameState.exercisesCompleted++; // Contador total de debugs
+    recalculateMetrics(); // Recalcula XP e seguidores
 
-    // 3. Adiciona ao registro de exercícios por semana.
     const currentWeek = getWeekNumber(new Date());
     gameState.exercisesPerWeek[currentWeek] = (gameState.exercisesPerWeek[currentWeek] || 0) + 1;
 
-    let debugRevenueGained = 0; // Receita ganha NESTE clique de debug
-    let activityDetailMessage = `Debug concluído. Total do dia: ${gameState.dailyDebugsCompleted}.`; // Mensagem base da atividade
+    let debugReward = 0;
+    let rewardMessage = '';
 
-    // 4. Lógica de Recompensa de Debugs Diários:
-    // Priorizamos a recompensa de 50 debugs.
-    if (gameState.dailyDebugsCompleted >= 50 && !gameState.dailyDebugRewardsPaid.hasPaid50) {
-        // Se 30 já foi pago, a recompensa de 50 deve ser a diferença
-        if (gameState.dailyDebugsCompleted >= 30 && gameState.dailyDebugRewardsPaid.hasPaid30) {
-            debugRevenueGained = EXERCISE_REVENUE_PER_50_DEBUG - EXERCISE_REVENUE_PER_30_DEBUG;
-            activityDetailMessage += ` Além disso, atingiu 50 debugs diários! Recebeu R$${debugRevenueGained.toFixed(2).replace('.', ',')} (ajustado pelo marco de 30 já pago).`;
-        } else {
-            // Se 30 não foi pago, a recompensa de 50 é o valor total
-            debugRevenueGained = EXERCISE_REVENUE_PER_50_DEBUG;
-            activityDetailMessage += ` Além disso, atingiu 50 debugs diários! Recebeu R$${EXERCISE_REVENUE_PER_50_DEBUG.toFixed(2).replace('.', ',')}.`;
-        }
-        gameState.dailyDebugRewardsPaid.hasPaid50 = true;
-        gameState.dailyDebugRewardsPaid.hasPaid30 = true; // Marca 30 como pago também, pois 50 implica 30
-    }
-    // Se não atingiu 50 OU já pagou 50, verifica a recompensa de 30.
-    else if (gameState.dailyDebugsCompleted >= 30 && !gameState.dailyDebugRewardsPaid.hasPaid30) {
-        debugRevenueGained = EXERCISE_REVENUE_PER_30_DEBUG;
-        activityDetailMessage += ` Além disso, atingiu 30 debugs diários! Recebeu R$${EXERCISE_REVENUE_PER_30_DEBUG.toFixed(2).replace('.', ',')}.`;
+    // Verifica recompensas por marcos diários
+    if (gameState.dailyDebugsCompleted >= 30 && !gameState.dailyDebugRewardsPaid.hasPaid30) {
+        debugReward += EXERCISE_REVENUE_PER_30_DEBUG;
         gameState.dailyDebugRewardsPaid.hasPaid30 = true;
+        rewardMessage += ` Recebeu R$${EXERCISE_REVENUE_PER_30_DEBUG.toFixed(2).replace('.', ',')} (30 debugs).`;
+    }
+    if (gameState.dailyDebugsCompleted >= 50 && !gameState.dailyDebugRewardsPaid.hasPaid50) {
+        debugReward += EXERCISE_REVENUE_PER_50_DEBUG;
+        gameState.dailyDebugRewardsPaid.hasPaid50 = true;
+        rewardMessage += ` Recebeu R$${EXERCISE_REVENUE_PER_50_DEBUG.toFixed(2).replace('.', ',')} (50 debugs).`;
     }
 
-    // 5. Adiciona a receita ganha (se houver) ao total simulado.
-    gameState.simulatedRevenue += debugRevenueGained;
+    if (debugReward > 0) {
+        gameState.simulatedRevenue += debugReward;
+        addActivityToList('Exercício', `Debug resolvido!${rewardMessage}`);
+    } else {
+        addActivityToList('Exercício', 'Debug resolvido!');
+    }
 
-    // 6. Adiciona APENAS UMA entrada de atividade com a mensagem detalhada.
-    addActivityToList('Exercício', activityDetailMessage);
-
-    // 7. Atualiza a data do último debug para a verificação diária.
-    gameState.lastDebugDate = new Date().toISOString();
-
-    // 8. Recalcula métricas e atualiza a UI.
-    recalculateMetrics();
     saveGameState();
     updateUI();
 });
 
-
-// ===============================================
-// 8. Funções de Suporte (Modais, Reset, etc.)
-// ===============================================
-
-// Event Listeners para botões de controle do cronômetro
 startTimerButton.addEventListener('click', startTimer);
 pauseTimerButton.addEventListener('click', pauseTimer);
 resetTimerButton.addEventListener('click', resetTimer);
 
-// Event Listeners para botões de controle do pomodoro
 startPomodoroButton.addEventListener('click', startPomodoro);
 pausePomodoroButton.addEventListener('click', pausePomodoro);
 resetPomodoroButton.addEventListener('click', resetPomodoro);
+
 focusTimeInput.addEventListener('change', loadPomodoroSettings);
 breakTimeInput.addEventListener('change', loadPomodoroSettings);
 
+createNewProjectButton.addEventListener('click', createNewProject);
+viewCompletedProjectsButton.addEventListener('click', () => {
+    completedProjectsModal.style.display = 'block';
+    renderCompletedProjects();
+});
 
-// Event Listeners para modais
+openDailyJournalButton.addEventListener('click', () => {
+    journalModal.style.display = 'block';
+    renderJournalEntries();
+});
+
+saveJournalEntryButton.addEventListener('click', () => {
+    const journalTitle = journalTitleInput.value.trim();
+    const journalEntry = journalEntryTextarea.value.trim();
+    if (journalTitle && journalEntry) {
+        gameState.journalEntries.push({
+            id: Date.now(),
+            title: journalTitle,
+            entry: journalEntry,
+            date: new Date().toISOString()
+        });
+        addActivityToList('Diário', `Nova entrada no diário: "${journalTitle}"`);
+        journalTitleInput.value = '';
+        journalEntryTextarea.value = '';
+        saveGameState();
+        renderJournalEntries();
+        updateUI();
+    } else {
+        alert('Por favor, preencha o título e o conteúdo do diário.');
+    }
+});
+
+
+resetDataButton.addEventListener('click', () => {
+    if (confirm('Tem certeza que deseja reiniciar TODOS os dados? Esta ação é irreversível!')) {
+        localStorage.removeItem('gamificationGameState');
+        // Recarrega a página para reiniciar o estado
+        location.reload();
+    }
+});
+
+
+// Fechar modais
 closeButtons.forEach(button => {
     button.addEventListener('click', (event) => {
-        event.target.closest('.modal').classList.remove('active');
+        event.target.closest('.modal').style.display = 'none';
     });
 });
 
 window.addEventListener('click', (event) => {
-    if (event.target.classList.contains('modal')) {
-        event.target.classList.remove('active');
+    if (event.target === journalModal) {
+        journalModal.style.display = 'none';
+    }
+    if (event.target === completedProjectsModal) {
+        completedProjectsModal.style.display = 'none';
+    }
+    if (event.target === lessonModal) {
+        lessonModal.style.display = 'none';
     }
 });
 
-// Event Listener para abrir o diário
-openDailyJournalButton.addEventListener('click', () => {
-    journalModal.classList.add('active');
-    renderJournalEntries(); // Renderiza as entradas existentes ao abrir
-});
-
-// Event Listener para salvar entrada do diário
-saveJournalEntryButton.addEventListener('click', saveJournalEntry);
-
-// Event Listener para criar novo projeto
-createNewProjectButton.addEventListener('click', createNewProject);
-
-// Event Listener para ver projetos concluídos
-viewCompletedProjectsButton.addEventListener('click', () => {
-    completedProjectsModal.classList.add('active');
-    renderCompletedProjects();
-});
-
-// Event Listener para resetar todos os dados
-resetDataButton.addEventListener('click', () => {
-    if (confirm('Tem certeza que deseja REINICIAR TODOS os dados? Esta ação é irreversível.')) {
-        localStorage.removeItem('gamificationGameState');
-        location.reload(); // Recarrega a página para iniciar com o estado padrão
-    }
-});
-
-
 // ===============================================
-// 9. Inicialização do Aplicativo
+// 7. Inicialização
 // ===============================================
 
-// Chamar quando o DOM estiver completamente carregado
 document.addEventListener('DOMContentLoaded', () => {
-    loadGameState(); // Carrega o estado salvo
-    checkAndResetDailyDebugs(); // Garante que o contador diário está correto para o dia
-    generateDailySummary(); // Tenta gerar o resumo do dia anterior
-    updateUI(); // Atualiza a interface com o estado carregado
-    adjustMainContentMargin(); // Ajusta a margem do conteúdo principal
+    loadGameState();
+    // Verifica e reseta debugs diários e recompensas pagas ANTES de atualizar a UI
+    checkAndResetDailyDebugs();
+    // Gera o resumo diário (se for um novo dia)
+    generateDailySummary();
+    // Atualiza a frase motivacional diária (se for um novo dia ou primeira carga)
+    updateMotivationalPhrase();
 
-    // Adiciona o listener para o resize, garantindo que o ajuste funcione em mudanças de tamanho
-    window.addEventListener('resize', adjustMainContentMargin);
+    recalculateMetrics(); // Garante que XP e seguidores estejam corretos ao carregar
+    updateUI(); // Atualiza toda a interface com os dados carregados/resetados
+    adjustMainContentMargin(); // Ajusta a margem do conteúdo principal
+    updateTimerDisplay(); // Garante que o timer display esteja correto ao carregar
 });
+
+// Ajusta a margem do conteúdo principal se a janela for redimensionada
+window.addEventListener('resize', adjustMainContentMargin);
+
+// Listener para Service Worker (já deve estar no seu index.html ou em outro lugar)
+// if ('serviceWorker' in navigator) {
+//     window.addEventListener('load', function() {
+//         navigator.serviceWorker.register('service-worker.js')
+//             .then(reg => console.log('Service Worker Registrado!', reg))
+//             .catch(err => console.log('Erro ao registrar Service Worker:', err));
+//     });
+// }
