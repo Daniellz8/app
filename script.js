@@ -8,8 +8,8 @@ const XP_BONUS_PER_PROJECT = 1000;
 const FOLLOWERS_PER_1000_XP = 42;
 const FOLLOWERS_BONUS_PER_PROJECT = 50;
 const REVENUE_PER_PROJECT = 300;
-const EXERCISE_REVENUE_PER_30_DEBUG = 30;
-const EXERCISE_REVENUE_PER_50_DEBUG = 50; // Este será um adicional aos 30 debugs
+const EXERCISE_REVENUE_PER_30_DEBUG = 50; // Corrigido para 50
+const EXERCISE_REVENUE_PER_50_DEBUG = 150; // Corrigido para 150 (este será um adicional aos 30 debugs)
 const MONTHLY_COST = 600;
 const REAL_REWARD_CONVERSION_FACTOR = 0.2; // 200/1000 = 0.2 -> 20% da receita líquida.
 const FOLLOWERS_FOR_10_STARS = 3086; // Meta para 10 estrelas
@@ -821,14 +821,14 @@ resolveDebugButton.addEventListener('click', () => {
     let debugRewardToAdd = 0;
     let rewardMessage = '';
 
-    // Recompensa de 30 debugs diários
+    // Recompensa de 30 debugs diários (R$50)
     if (gameState.dailyDebugsCompleted >= 30 && !gameState.dailyDebugRewardsPaid.hasPaid30) {
         debugRewardToAdd += EXERCISE_REVENUE_PER_30_DEBUG;
         gameState.dailyDebugRewardsPaid.hasPaid30 = true;
         rewardMessage += ` Recebeu R$${EXERCISE_REVENUE_PER_30_DEBUG.toFixed(2).replace('.', ',')} (30 debugs diários).`;
     }
 
-    // Recompensa de 50 debugs diários (adicional aos 30)
+    // Recompensa de 50 debugs diários (R$150 adicionais)
     if (gameState.dailyDebugsCompleted >= 50 && !gameState.dailyDebugRewardsPaid.hasPaid50) {
         debugRewardToAdd += EXERCISE_REVENUE_PER_50_DEBUG;
         gameState.dailyDebugRewardsPaid.hasPaid50 = true;
