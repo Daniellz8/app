@@ -1161,4 +1161,146 @@ section h3 {
         width: 60%;
         max-width: 800px;
     }
+
+    /* Tablets (768px a 1023px) */
+@media (min-width: 768px) and (max-width: 1023px) {
+    header.fixed-dashboard {
+        flex-direction: row;
+        /* Blocos em linha */
+        justify-content: space-around;
+        align-items: flex-start;
+        padding: 15px 20px;
+        flex-wrap: wrap;
+        /* Permite quebrar se não houver espaço */
+        height: auto;
+        /* Altura se ajusta ao conteúdo */
+        gap: 10px; /* Reduz o gap para tablets */
+    }
+
+    .dashboard-metrics {
+        flex: 2;
+        /* Métricas ocupam mais espaço */
+        justify-content: flex-start;
+        /* Alinha métricas à esquerda */
+        gap: 10px 15px;
+        /* Espaçamento entre as métricas, um pouco mais apertado */
+        width: auto;
+        padding: 0;
+    }
+
+    .metric-item {
+        align-items: flex-start;
+        /* Alinha texto da métrica à esquerda */
+        flex: none;
+        /* Não cresce/encolhe com flex */
+        width: auto;
+        min-width: 90px; /* Mantém um min-width para não colapsar */
+    }
+
+    .metric-label {
+        font-size: 0.8em;
+    }
+
+    .metric-value {
+        font-size: 1.2em;
+    }
+
+    .metric-item.star-rating .metric-value {
+        font-size: 1.4em;
+    }
+
+    .activity-log,
+    .motivational-phrase-log {
+        flex: 1;
+        /* Ocupa espaço igual, podendo ficar ao lado */
+        min-width: 200px;
+        /* Garante largura mínima para os logs */
+        margin: 0;
+        /* Remove margem extra */
+        text-align: left;
+        /* Alinha o texto do título do log à esquerda */
+        padding: 10px 15px;
+        /* Mantém padding razoável */
+    }
+
+    .activity-log ul {
+        max-height: 80px;
+        /* Aumenta a altura para logs em tablets */
+        font-size: 0.85em;
+    }
+
+    main.content-below-dashboard {
+        flex-direction: row;
+        /* Seções em linha */
+        flex-wrap: wrap;
+        justify-content: center;
+        /* Centraliza as seções para melhor visualização */
+        gap: 25px;
+        /* Espaçamento entre os cards */
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    section {
+        padding: 20px;
+        /* Um pouco menos de padding para sections */
+        flex: 1 1 calc(50% - 25px);
+        /* Tenta 2 colunas */
+    }
+
+    .action-buttons-container {
+        flex-direction: row;
+        justify-content: center;
+        /* Centraliza os botões */
+        width: 100%;
+        gap: 10px;
+    }
+
+    .action-button {
+        flex: 1 1 auto;
+        /* Permite que cresçam e encolham */
+        max-width: 250px;
+        /* Limita a largura máxima */
+    }
+
+    .timers-section {
+        flex-direction: row;
+        flex: 1 1 100%;
+        /* Ocupa a linha inteira */
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .timer-study,
+    .timer-pomodoro {
+        flex: 1 1 calc(50% - 15px);
+        /* Divide o espaço igualmente entre os timers */
+        min-width: 280px;
+    }
+
+    .create-project {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .create-project input {
+        flex: 1;
+    }
+
+    .create-project button {
+        width: auto;
+        flex-shrink: 0;
+    }
+
+    .active-projects-list {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        /* Mais compacto para tablets */
+    }
+
+    .modal-content {
+        width: 75%;
+        max-width: 700px;
+    }
+}
+
 }
